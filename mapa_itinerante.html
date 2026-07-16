@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGGM Itinerante - Mapa de Municípios</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <!-- Leaflet JS carregado no <head> para garantir que esteja disponível antes do código abaixo -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; }
+
+    #cabecalho {
+      background: #00984b;
+      color: white;
+      padding: 16px 24px;
+    }
+    #cabecalho h1 { font-size: 1.3rem; font-weight: bold; }
+    #cabecalho p { font-size: 0.9rem; margin-top: 4px; opacity: 0.9; }
+
+    #filtro-wrapper {
+      background: #00984b;
+      padding: 10px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    #filtro-wrapper label {
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    #filtro-cidade {
+      padding: 7px 12px;
+      border-radius: 4px;
+      border: none;
+      font-size: 0.9rem;
+      min-width: 240px;
+    }
+    #btn-limpar {
+      padding: 7px 14px;
+      background: white;
+      color: #00984b;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    #btn-limpar:hover { background: #e6f4ed; }
+
+    #mapa { height: 520px; width: 100%; }
+
+    #info-bar {
+      background: white;
+      border-top: 3px solid #00984b;
+      padding: 10px 24px;
+      font-size: 0.85rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+<div id="cabecalho">
+  <h1>SGGM Itinerante — Mapa de Municípios</h1>
+  <p>Controladoria Geral do Estado do Paraná</p>
+</div>
+
+<div id="filtro-wrapper">
+  <label for="filtro-cidade">Selecione uma cidade:</label>
+  <select id="filtro-cidade">
+    <option value="">— Todos os municípios —</option>
+  </select>
+  <button id="btn-limpar">Limpar filtro</button>
+</div>
+
+<div id="mapa"></div>
+<div id="info-bar">Exibindo <strong id="contador">0</strong> localidade(s) no mapa.</div>
+
+<script>
+const localizacoes = [{"city": "Londrina", "lat": -23.294806256731, "lng": -51.213368842581, "desc": "-Verificação das vacinas"}, {"city": "Almirante Tamandaré", "lat": -25.313947179101, "lng": -49.305779562733, "desc": "- Kit Merenda"}, {"city": "Antonina", "lat": -25.436319529188, "lng": -48.717835193469, "desc": "-Kit Merenda"}, {"city": "Apucarana", "lat": -23.571266849394, "lng": -51.466814717087, "desc": "-Verificação das vacinas"}, {"city": "Arapongas", "lat": -23.440023055697, "lng": -51.447581880654, "desc": "-Verificação das vacinas"}, {"city": "Araucária", "lat": -25.597743030984, "lng": -49.406528591697, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Assaí", "lat": -23.379804114471, "lng": -50.819300304249, "desc": "-Verificação das vacinas"}, {"city": "Bandeirantes", "lat": -23.090827921426, "lng": -50.374362709461, "desc": "-Verificação das vacinas"}, {"city": "Bela Vista do Paraíso", "lat": -22.973292643734, "lng": -51.192839939368, "desc": "-Verificação das vacinas"}, {"city": "Boa Vista de Aparecida", "lat": -25.444016083418, "lng": -53.406346134963, "desc": "-Verificação das vacinas"}, {"city": "Bocaiuva do Sul", "lat": -25.205351449451, "lng": -49.113692234682, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Braganey", "lat": -24.819034820455, "lng": -53.113743455897, "desc": "-Verificação das vacinas"}, {"city": "Cafelândia", "lat": -24.614838674796, "lng": -53.321886037008, "desc": "-Verificação das vacinas"}, {"city": "Cambé", "lat": -23.292935245738, "lng": -51.275934189134, "desc": "-Verificação das vacinas"}, {"city": "Campina Grande do Sul", "lat": -25.313891574121, "lng": -49.055498274098, "desc": "-Kit Merenda"}, {"city": "Campo Largo", "lat": -25.45742380296, "lng": -49.528510660389, "desc": "-Verificação das vacinas"}, {"city": "Campo Magro", "lat": -25.366296858961, "lng": -49.451173978993, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Campo Mourão", "lat": -24.03051490508, "lng": -52.377973663333, "desc": "-Verificação das vacinas"}, {"city": "Capitão Leonidas", "lat": -25.464809039756, "lng": -53.614621206475, "desc": "-Verificação das vacinas"}, {"city": "Cascavel", "lat": -24.94470409982, "lng": -53.436788054431, "desc": "-Verificação da Vacina"}, {"city": "Castro", "lat": -24.784905913586, "lng": -49.999421410856, "desc": "-Kit Merenda"}, {"city": "Catanduvas", "lat": -25.202603601466, "lng": -53.154941890503, "desc": "-Verificação das vacinas"}, {"city": "Centenário do Sul", "lat": -22.811335330611, "lng": -51.597269482763, "desc": "-Verificação das vacinas"}, {"city": "Cerro Azul", "lat": -24.821057689841, "lng": -49.259899497917, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Céu Azul", "lat": -25.144828786122, "lng": -53.84913601156, "desc": "-Verificação das vacinas"}, {"city": "Cianorte", "lat": -23.653350898053, "lng": -52.604922064634, "desc": "-Verificação das Vacinas"}, {"city": "Colombo", "lat": -25.289414901276, "lng": -49.224577490764, "desc": "-Kit Merenda"}, {"city": "Corbélia", "lat": -24.793866933958, "lng": -53.296219615075, "desc": "-Verificação das vacinas"}, {"city": "Cornélio Procópio", "lat": -23.17895146883, "lng": -50.649501883682, "desc": "-Verificação das vacinas"}, {"city": "Cruzmaltina", "lat": -23.991545093894, "lng": -51.443393226717, "desc": "-Verificação das vacinas"}, {"city": "Curitiba", "lat": -25.417581196226, "lng": -49.272970112513, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Farol", "lat": -24.092213888587, "lng": -52.623224792667, "desc": "-Verificação das vacinas"}, {"city": "Fazenda Rio Grande", "lat": -25.639602221925, "lng": -49.312474660148, "desc": "-Kit Merenda"}, {"city": "Florestópolis", "lat": -22.859904850564, "lng": -51.390598602586, "desc": "-Verificação das vacinas"}, {"city": "Formosa do Oeste", "lat": -24.293329790938, "lng": -53.313818398714, "desc": "-Verificação das vacinas"}, {"city": "Foz do Iguaçu", "lat": -25.514734640841, "lng": -54.577360070143, "desc": "-Verificação das vacinas"}, {"city": "Francisco Beltrão", "lat": -26.073611512927, "lng": -53.053309075066, "desc": "-Verificação das vacinas"}, {"city": "General Carneiro", "lat": -26.418094716332, "lng": -51.315422189837, "desc": "-Verificação das vacinas"}, {"city": "Godoy Moreira", "lat": -24.191332403906, "lng": -51.923188242918, "desc": "-Verificação das vacinas"}, {"city": "Guarapuava", "lat": -25.374512294683, "lng": -51.477772269211, "desc": "-Verificação das vacinas"}, {"city": "Guaratuba", "lat": -25.87888371201, "lng": -48.575277540725, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Ibiporã", "lat": -23.263200595348, "lng": -51.052607143402, "desc": "-Verificação das vacinas"}, {"city": "Iguatu", "lat": -24.716410757549, "lng": -53.086537193273, "desc": "-Verificação das vacinas"}, {"city": "Indianópolis", "lat": -23.479093188324, "lng": -52.698626368222, "desc": "-Verificação das vacinas"}, {"city": "Iracema do Oeste", "lat": -24.42579988768, "lng": -53.353856737142, "desc": "-Verificação das vacinas"}, {"city": "Irati", "lat": -25.466147059206, "lng": -50.648854264322, "desc": "-Verificação das vacinas"}, {"city": "Iretama", "lat": -24.416068700871, "lng": -52.10265542445, "desc": "-Verificação das vacinas"}, {"city": "Itaperuçu", "lat": -25.217143324207, "lng": -49.350753500566, "desc": "-Kit Merenda"}, {"city": "Ivaiporã", "lat": -24.238063577344, "lng": -51.673157254178, "desc": "-Verificação das vacinas"}, {"city": "Jacarezinho", "lat": -23.156549193571, "lng": -49.97594233996, "desc": "-Verificação das vacinas"}, {"city": "Jaguapitã", "lat": -23.104296857947, "lng": -51.533771055637, "desc": "-Verificação das vacinas"}, {"city": "Jardim Alegre", "lat": -24.177965745001, "lng": -51.693503730629, "desc": "-Verificação das vacinas"}, {"city": "Jataizinho", "lat": -23.25678577848, "lng": -50.977977279269, "desc": "-Verificação das vacinas"}, {"city": "Jesuítas", "lat": -24.377556033868, "lng": -53.386341945711, "desc": "-Verificação das vacinas"}, {"city": "Lidianópolis", "lat": -24.106669376346, "lng": -51.652820946662, "desc": "-Verificação das vacinas"}, {"city": "Lindoeste", "lat": -25.259023642415, "lng": -53.57619984943, "desc": "-Verificação das vacinas"}, {"city": "Lunardelli", "lat": -24.078305308756, "lng": -51.742855986798, "desc": "-Verificação das vacinas"}, {"city": "Lupionópolis", "lat": -22.75422422746, "lng": -51.658401511213, "desc": "-Verificação das vacinas"}, {"city": "Mallet", "lat": -25.879787219446, "lng": -50.826522069642, "desc": "-Verificação das vacinas"}, {"city": "Mandaguaçu", "lat": -23.344866908982, "lng": -52.097678137365, "desc": "-Verificação das vacinas"}, {"city": "Mandaguari", "lat": -23.511826658456, "lng": -51.687750520375, "desc": "-Verificação das vacinas"}, {"city": "Manoel Ribas", "lat": -24.515778038857, "lng": -51.668698855597, "desc": "-Verificação das vacinas"}, {"city": "Maria Helena", "lat": -23.613435333429, "lng": -53.205756446779, "desc": "-Verificação das vacinas"}, {"city": "Marialva", "lat": -23.47854080475, "lng": -51.798123296946, "desc": "-Verificação das vacinas"}, {"city": "Maringá", "lat": -23.404382302809, "lng": -51.938538161072, "desc": "-Verificação das vacinas"}, {"city": "Marmeleiro", "lat": -26.144584848894, "lng": -53.028428018674, "desc": "-Verificação das vacinas"}, {"city": "Matinhos", "lat": -25.823810546133, "lng": -48.553215731227, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Mato Rico", "lat": -24.703918746343, "lng": -52.149878347861, "desc": "-Verificação das vacinas"}, {"city": "Medianeira", "lat": -25.288514674643, "lng": -54.093236302004, "desc": "-Verificação das vacinas"}, {"city": "Miraselva", "lat": -22.967018715754, "lng": -51.48553857872, "desc": "-Verificação das vacinas"}, {"city": "Morretes", "lat": -25.475992901388, "lng": -48.83235077126, "desc": "-Kit Merenda"}, {"city": "Nova Aurora", "lat": -24.527000775305, "lng": -53.25798489001, "desc": "-Verificação das vacinas"}, {"city": "Nova Esperança", "lat": -23.180312528915, "lng": -52.201237155261, "desc": "-Verificação das vacinas"}, {"city": "Nova Olímpia", "lat": -23.471032222116, "lng": -53.09014306743, "desc": "-Verificação das vacinas"}, {"city": "Nova Tebas", "lat": -24.437602710018, "lng": -51.948380319791, "desc": "-Verificação das vacinas"}, {"city": "Palmas", "lat": -26.482832272526, "lng": -51.988761694183, "desc": "-Verificação das vacinas"}, {"city": "Palmeira", "lat": -25.423453389961, "lng": -49.999723277102, "desc": "-Kit Merenda"}, {"city": "Palmital", "lat": -24.884378678356, "lng": -52.210614458032, "desc": "-Verificação das vacinas"}, {"city": "Paraíso do Norte", "lat": -23.282963554186, "lng": -52.602496070312, "desc": "-Verificação das vacinas"}, {"city": "Paranaguá", "lat": -25.510574965231, "lng": -48.525235724491, "desc": "-Verificação das vacinas"}, {"city": "Paranavaí", "lat": -23.079288922802, "lng": -52.464093699098, "desc": "-Verificação das vacinas"}, {"city": "Pato Branco", "lat": -26.226690077701, "lng": -52.672574189166, "desc": "-Verificação das vacinas"}, {"city": "Paulo Frontin", "lat": -26.042320294529, "lng": -50.83107880059, "desc": "-Verificação das vacinas"}, {"city": "Pinhais", "lat": -25.44239426909, "lng": -49.192828571307, "desc": "-Kit Merenda"}, {"city": "Piraquara", "lat": -25.441940208255, "lng": -49.059961102149, "desc": "-Kit Merenda"}, {"city": "Pitanga", "lat": -24.754764906893, "lng": -51.764573009859, "desc": "-Verificação das vacinas"}, {"city": "Pitangueiras", "lat": -23.231433971519, "lng": -51.586668307031, "desc": "-Verificação das vacinas"}, {"city": "Ponta Grossa", "lat": -25.090540134505, "lng": -50.16503100588, "desc": "-Verificação das vacinas"}, {"city": "Pontal do Paraná", "lat": -25.574048853786, "lng": -48.361354712271, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Prado Ferreira", "lat": -23.038973252521, "lng": -51.442386589916, "desc": "-Verificação das vacinas"}, {"city": "Primeiro de Maio", "lat": -22.850803675701, "lng": -51.028929679855, "desc": "-Verificação das vacinas"}, {"city": "Prudentópolis", "lat": -25.202711031298, "lng": -50.987247612031, "desc": "-Verificação das vacinas"}, {"city": "Quatro Barras", "lat": -25.369604557287, "lng": -49.07416719532, "desc": "-Kit Merenda"}, {"city": "Rebouças", "lat": -25.624991159838, "lng": -50.694189981989, "desc": "-Verificação das vacinas"}, {"city": "Rio Azul", "lat": -25.726273522164, "lng": -50.790631773832, "desc": "-Verificação das vacinas"}, {"city": "Rio Branco do Sul", "lat": -25.187855023915, "lng": -49.311704655746, "desc": "-Kit Merenda"}, {"city": "Rio Negro", "lat": -26.104031458103, "lng": -49.798342841304, "desc": "-Verificação das vacinas"}, {"city": "Rolândia", "lat": -23.310420048929, "lng": -51.369559539821, "desc": "-Verificação das vacinas"}, {"city": "Roncador", "lat": -24.596172893443, "lng": -52.274483441849, "desc": "-Verificação das vacinas"}, {"city": "Sabaudia", "lat": -23.317602756579, "lng": -51.55354817285, "desc": "-Verificação das vacinas"}, {"city": "Santa Lúcia", "lat": -25.406976932407, "lng": -53.568016291122, "desc": "-Verificação das vacinas"}, {"city": "Santa Maria do Oeste", "lat": -24.938086298703, "lng": -51.871433261716, "desc": "-Verificação das vacinas"}, {"city": "Santa Terezinha de Itaipu", "lat": -25.437922376878, "lng": -54.400208959761, "desc": "-Verificação das vacinas"}, {"city": "São João do Ivaí", "lat": -23.990859610741, "lng": -51.822423934022, "desc": "-Verificação das vacinas"}, {"city": "São José dos Pinhais", "lat": -25.531836915737, "lng": -49.206432881798, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Rondon", "lat": -23.41681604695, "lng": -52.772204850332, "desc": "-Verificação das vacinas"}, {"city": "Sarandí", "lat": -23.444014191665, "lng": -51.875038146973, "desc": "-Verificação das vacinas"}, {"city": "Sertanópolis", "lat": -23.058075014268, "lng": -51.035056110538, "desc": "-Verificação das vacinas"}, {"city": "Tapejara", "lat": -23.730639683708, "lng": -52.872390746613, "desc": "-Verificação das vacinas"}, {"city": "Tapira", "lat": -23.323262273062, "lng": -53.07119606599, "desc": "-Verificação das vacinas"}, {"city": "Telêmaco Borba", "lat": -24.328020592239, "lng": -50.630149520671, "desc": "-Verificação das vacinas"}, {"city": "Tijucas do Sul", "lat": -25.926460514607, "lng": -49.179309812489, "desc": "-Delegacias/Institutos de Identificação"}, {"city": "Toledo", "lat": -24.719634674418, "lng": -53.74030548019, "desc": "-Verificação das vacinas"}, {"city": "Três Barras do Paraná", "lat": -25.418048915494, "lng": -53.18266759181, "desc": "-Verificação das vacinas"}, {"city": "Turvo", "lat": -25.042992848144, "lng": -51.539440176985, "desc": "-Verificação das vacinas"}, {"city": "Ubiratã", "lat": -24.537173642863, "lng": -52.986457829268, "desc": "-Verificação das vacinas"}, {"city": "Umuarama", "lat": -23.759625493291, "lng": -53.30806504941, "desc": "-Verificação das vacinas"}, {"city": "União da Vitória", "lat": -26.227132154591, "lng": -51.067392828825, "desc": "-Verificação das vacinas"}, {"city": "Vera Cruz do Oeste", "lat": -25.056975238896, "lng": -53.879785477343, "desc": "-Verificação das vacinas"}, {"city": "Porecatu", "lat": -22.752935385446, "lng": -51.379580486764, "desc": "-Verificação das vacinas"}, {"city": "Cruzeiro do Oeste", "lat": -23.779778782573, "lng": -53.071167229985, "desc": "-Verificação das vacinas"}, {"city": "Mariluz", "lat": -24.001722354434, "lng": -53.147392810853, "desc": "-Verificação das vacinas"}, {"city": "Perobal", "lat": -23.894060796073, "lng": -53.409992398697, "desc": "-Verificação das vacinas"}, {"city": "Icaraíma", "lat": -23.392017633743, "lng": -53.619629698443, "desc": "-Verificação das vacinas"}, {"city": "Alto Paraíso", "lat": -23.507197749218, "lng": -53.72792939728, "desc": "-Verificação das vacinas"}, {"city": "Esperança Nova", "lat": -23.723804920085, "lng": -53.810454971207, "desc": "-Verificação das vacinas"}, {"city": "Pérola", "lat": -23.80180322923, "lng": -53.682888379533, "desc": "-Verificação das vacinas"}, {"city": "Alto Piquiri", "lat": -24.02131139848, "lng": -53.442647499416, "desc": "-Verificação das vacinas"}, {"city": "Brasilândia do Sul", "lat": -24.196997444953, "lng": -53.52762178471, "desc": "-Verificação das vacinas"}, {"city": "Xambrê", "lat": -23.735619183538, "lng": -53.488150836867, "desc": "-Verificação das vacinas"}, {"city": "Iporã", "lat": -24.003297716659, "lng": -53.710023161547, "desc": "-Verificação das vacinas"}, {"city": "Ivaté", "lat": -23.407855310144, "lng": -53.370230203395, "desc": "-Verificação das vacinas"}, {"city": "Cafezal do Sul", "lat": -23.900041734687, "lng": -53.512430195614, "desc": "-Verificação das vacinas"}, {"city": "Douradina", "lat": -23.384154216793, "lng": -53.293325901032, "desc": "-Verificação das vacinas"}, {"city": "Floresta", "lat": -23.613356689121, "lng": -52.08206129554, "desc": "-Retomada das aulas"}, {"city": "Ivatuba", "lat": -23.618050015495, "lng": -52.218028144126, "desc": "-Retomada das aulas"}, {"city": "Doutor Camargo", "lat": -23.557073501616, "lng": -52.218704224548, "desc": "-Retomada das aulas"}, {"city": "Paiçandu", "lat": -23.456022304479, "lng": -52.049853801727, "desc": "-Retomada das aulas"}, {"city": "Santa Fé", "lat": -23.039241141525, "lng": -51.808432621572, "desc": "-Retomada das aulas"}, {"city": "Astorga", "lat": -23.234031117607, "lng": -51.66504264381, "desc": "-Retomada das aulas"}, {"city": "Flórida", "lat": -23.085249036523, "lng": -51.954098938066, "desc": "-Retomada das aulas"}, {"city": "Munhoz de Melo", "lat": -23.147768883656, "lng": -51.773779384924, "desc": "-Retomada das aulas"}, {"city": "Presidente Castelo Branco", "lat": -23.278604891507, "lng": -52.152957917175, "desc": "-Retomada das aulas"}, {"city": "Atalaia", "lat": -23.150915813992, "lng": -52.052997348406, "desc": "-Retomada das aulas"}, {"city": "Lobato", "lat": -23.007097827017, "lng": -51.952575442888, "desc": "-Retomada das aulas"}, {"city": "Ourizona", "lat": -23.404182755409, "lng": -52.195272445679, "desc": "-Retomada das aulas"}, {"city": "Colorado", "lat": -22.836659173408, "lng": -51.974301338196, "desc": "-Retomada das aulas"}, {"city": "Peabiru", "lat": -23.913847646453, "lng": -52.346162796021, "desc": "-Retomada das aulas"}, {"city": "Corumbataí do Sul", "lat": -24.100007258199, "lng": -52.117702960968, "desc": "-Retomada das aulas"}, {"city": "Barbosa Ferraz", "lat": -24.027685916563, "lng": -52.008032798767, "desc": "-Retomada das aulas"}, {"city": "Fênix", "lat": -23.9160586395, "lng": -51.978067159653, "desc": "-Retomada das aulas"}, {"city": "Luziana", "lat": -24.283183543978, "lng": -52.277036905289, "desc": "-Retomada das aulas"}, {"city": "Mamborê", "lat": -24.30791372255, "lng": -52.52984046936, "desc": "-Retomada das aulas"}, {"city": "Boa Esperança", "lat": -24.240527586126, "lng": -52.786238193512, "desc": "-Retomada das aulas"}, {"city": "Goioerê", "lat": -24.184481563251, "lng": -53.02508354187, "desc": "-Retomada das aulas"}, {"city": "Araruna", "lat": -23.93116711307, "lng": -52.497600317001, "desc": "-Retomada das aulas"}, {"city": "Engenheiro Beltrão", "lat": -23.798421137207, "lng": -52.25917339325, "desc": "-Retomada das aulas"}, {"city": "Terra Boa", "lat": -23.767534533573, "lng": -52.447142601013, "desc": "-Retomada das aulas"}, {"city": "Quintal do Sol", "lat": -23.849143268447, "lng": -52.13351726532, "desc": "-Retomada das aulas"}, {"city": "Assis Chateaubriand", "lat": -24.403291075186, "lng": -53.511786460876, "desc": "-Retomada das aulas"}, {"city": "Marechal Candido Rondon", "lat": -24.553959610972, "lng": -54.05668258667, "desc": "-Retomada das aulas"}, {"city": "Maripá", "lat": -24.418304560677, "lng": -53.82870554924, "desc": "-Retomada das aulas"}, {"city": "Pato Bragado", "lat": -24.625651368626, "lng": -54.226970672607, "desc": "-Retomada das aulas"}, {"city": "Mercedes", "lat": -24.448751355272, "lng": -54.164990186691, "desc": "-Retomada das aulas"}, {"city": "Nova Santa Rosa", "lat": -24.466379197788, "lng": -53.95512342453, "desc": "-Retomada das aulas"}, {"city": "Quatro Pontes", "lat": -24.57244695084, "lng": -53.977417945862, "desc": "-Retomada das aulas"}, {"city": "Diamante do Oeste", "lat": -24.943728712051, "lng": -54.102870225906, "desc": "-Retomada das aulas"}, {"city": "São José das Palmeiras", "lat": -24.833744018751, "lng": -54.062025547028, "desc": "-Retomada das aulas"}, {"city": "São Pedro do Iguaçu", "lat": -24.931597203922, "lng": -53.857823610306, "desc": "-Retomada das aulas"}, {"city": "Ouro Verde do Oeste", "lat": -24.772067173358, "lng": -53.907380104065, "desc": "-Retomada das aulas"}, {"city": "Goioxim", "lat": -25.198234485981, "lng": -51.992411613464, "desc": "-Retomada das aulas"}, {"city": "Cantagalo", "lat": -25.371776032662, "lng": -52.123217582703, "desc": "-Retomada das aulas"}, {"city": "Virmond", "lat": -25.380965597042, "lng": -52.203598022461, "desc": "-Retomada das aulas"}, {"city": "Candói", "lat": -25.568759222148, "lng": -52.051913738251, "desc": "-Retomada das aulas"}, {"city": "Laranjeiras do Sul", "lat": -25.405002500066, "lng": -52.415428161621, "desc": "-Retomada das aulas"}, {"city": "Rio Bonito do Iguaçu", "lat": -25.488651021662, "lng": -52.526321411133, "desc": "-Retomada das aulas"}, {"city": "Nova Laranjeiras", "lat": -25.303571778862, "lng": -52.543830871582, "desc": "-Retomada das aulas"}, {"city": "Marquinho", "lat": -25.112514181277, "lng": -52.257928848267, "desc": "-Retomada das aulas"}, {"city": "Fernandes Pinheiro", "lat": -25.412854809088, "lng": -50.54895401001, "desc": "-Retomada das aulas"}, {"city": "Teixeira Soares", "lat": -25.365675766963, "lng": -50.45741558075, "desc": "-Retomada das aulas"}, {"city": "Imbituva", "lat": -25.227343648528, "lng": -50.599712133408, "desc": "-Retomada das aulas"}, {"city": "Guamiranga", "lat": -25.189341741528, "lng": -50.812411308289, "desc": "-Retomada das aulas"}, {"city": "São Tomé", "lat": -23.535455007805, "lng": -52.588344812393, "desc": "-Retomada das aulas"}, {"city": "Japurá", "lat": -23.467911228881, "lng": -52.554752826691, "desc": "-Retomada das aulas"}, {"city": "São Manoel do Paraná", "lat": -23.392297945717, "lng": -52.645207643509, "desc": "-Retomada das aulas"}, {"city": "Guaporema", "lat": -23.335540094891, "lng": -52.775444984436, "desc": "-Retomada das aulas"}, {"city": "Cambirá", "lat": -23.599612924201, "lng": -51.577355861664, "desc": "-Retomada das aulas"}, {"city": "Jandaia do Sul", "lat": -23.596435989525, "lng": -51.645838022232, "desc": "-Retomada das aulas"}, {"city": "Bom Sucesso", "lat": -23.707635265034, "lng": -51.765496730804, "desc": "-Retomada das aulas"}, {"city": "Marumbi", "lat": -23.705454447773, "lng": -51.640881299973, "desc": "-Retomada das aulas"}, {"city": "Califórnia", "lat": -23.666006802655, "lng": -51.354668140411, "desc": "-Retomada das aulas"}, {"city": "Carambeí", "lat": -24.949779426772, "lng": -50.117300748825, "desc": "-Retomada das aulas"}, {"city": "Piraí do Sul", "lat": -24.531629877639, "lng": -49.939212799072, "desc": "-Retomada das aulas"}, {"city": "São João do Triunfo", "lat": -25.6796482944, "lng": -50.296000242233, "desc": "-Retomada das aulas"}, {"city": "Jaguariaíva", "lat": -24.257695371298, "lng": -49.720290899277, "desc": "-Retomada das aulas"}, {"city": "Jussara", "lat": -23.620216890879, "lng": -52.471904754639, "desc": "-Retomada das aulas"}, {"city": "Porto Amazonas", "lat": -25.54744606292, "lng": -49.897692203522, "desc": "-Retomada das aulas"}, {"city": "Tupãssi", "lat": -24.581353649701, "lng": -53.512247800827, "desc": "-Retomada das aulas"}, {"city": "Porto Vitória", "lat": -26.161316908899, "lng": -51.231661987222, "desc": "-Pesquisa Satisfação Escolas"}, {"city": "Ortigueira", "lat": -24.209013698959, "lng": -50.926670180218, "desc": "-Pesquisa de Satisfação Escolas"}, {"city": "Vitorino", "lat": -26.268043280195, "lng": -52.783727645874, "desc": "-Pesquisa Satisfação Escolas"}, {"city": "Paula Freitas", "lat": -26.209186916301, "lng": -50.938646793365, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Renascença", "lat": -26.160518440541, "lng": -52.967501878738, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Matelãndia", "lat": -25.242153430961, "lng": -53.989257216454, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Missal", "lat": -25.0896627, "lng": -54.2473145, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Mariópolis", "lat": -26.352935930378, "lng": -52.549248933792, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Alvorada do Sul", "lat": -22.785403394444, "lng": -51.230621337891, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Ibema", "lat": -25.120196326611, "lng": -53.007831573486, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Campo Bonito", "lat": -25.034065146606, "lng": -52.994538545609, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Cafeara", "lat": -22.789066206697, "lng": -51.716358661652, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Chopinzinho", "lat": -25.859824709262, "lng": -52.530055046082, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Coronel Vivida", "lat": -25.981589314785, "lng": -52.564939856529, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Curiúva", "lat": -24.037504309312, "lng": -50.456771850586, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Guaraniaçu", "lat": -25.102753428109, "lng": -52.869225740433, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Tamarana", "lat": -23.723632376794, "lng": -51.098366975784, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Itiaipulândia", "lat": -25.14634872821, "lng": -54.295302629471, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "São MIguel do Iguaçu", "lat": -25.348578968639, "lng": -54.242280721664, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Ventania", "lat": -24.246842926506, "lng": -50.246690511703, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Guaraci", "lat": -22.969393781385, "lng": -51.651663780212, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Honório Serpa", "lat": -26.145331257905, "lng": -52.387297153473, "desc": "- Pesquisa de Satisfação Escolas"}, {"city": "Nossa Senhora das Graças", "lat": -22.913989866654, "lng": -51.798026561737, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Santo Inacio", "lat": -22.697847747523, "lng": -51.794089078903, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Itambé", "lat": -23.656779345998, "lng": -51.989589929581, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "São Jorge do Ivaí", "lat": -23.432886683838, "lng": -52.292658090591, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Florai", "lat": -23.320592973812, "lng": -52.298526763916, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Angulo", "lat": -23.196055437541, "lng": -51.914895772934, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Iguaraçu", "lat": -23.19891525452, "lng": -51.827477216721, "desc": "- Pesquisa de Satisfação Escola"}, {"city": "Sengés", "lat": -24.115641504463, "lng": -49.4738938, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Arapoti", "lat": -24.137961850177, "lng": -49.81802795, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Wenceslau Braz", "lat": -23.879130150151, "lng": -49.81275215, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Siqueira Campos", "lat": -23.683911803179, "lng": -49.8379288, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Quatiguá", "lat": -23.567852566537, "lng": -49.916210174561, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Ribeirão Claro", "lat": -23.200039441685, "lng": -49.753550291061, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Joaquim Tavorá", "lat": -23.503409891634, "lng": -49.923119544983, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}, {"city": "Carlópolis", "lat": -23.431396508192, "lng": -49.72573275, "desc": "Pesquisa de Fomento ao Controle Social Escolas"}];
+
+// Inicializa o mapa
+const map = L.map('mapa').setView([-24.8, -51.5], 7);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://osm.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 18
+}).addTo(map);
+
+// Grupo de clusters
+let clusterGroup = L.markerClusterGroup();
+map.addLayer(clusterGroup);
+
+// Preenche o select de cidades
+const select = document.getElementById('filtro-cidade');
+const cidadesUnicas = [...new Set(localizacoes.map(l => l.city))].sort();
+cidadesUnicas.forEach(cidade => {
+  const opt = document.createElement('option');
+  opt.value = cidade;
+  opt.textContent = cidade;
+  select.appendChild(opt);
+});
+
+function atualizarContador(n) {
+  document.getElementById('contador').textContent = n;
+}
+
+function renderizarMarcadores(filtro) {
+  clusterGroup.clearLayers();
+  const lista = filtro
+    ? localizacoes.filter(l => l.city === filtro)
+    : localizacoes;
+
+  lista.forEach(loc => {
+    const marker = L.marker([loc.lat, loc.lng]);
+    marker.bindPopup(
+      `<strong>${loc.city}</strong><br>${loc.desc}`
+    );
+    clusterGroup.addLayer(marker);
+  });
+
+  atualizarContador(lista.length);
+
+  // Ajusta o zoom para os pontos filtrados
+  if (lista.length > 0) {
+    const bounds = lista.map(l => [l.lat, l.lng]);
+    map.fitBounds(bounds, { padding: [40, 40] });
+  }
+}
+
+// Carrega todos ao iniciar
+renderizarMarcadores('');
+
+// Filtro pelo select
+select.addEventListener('change', () => {
+  renderizarMarcadores(select.value);
+});
+
+// Botão limpar
+document.getElementById('btn-limpar').addEventListener('click', () => {
+  select.value = '';
+  renderizarMarcadores('');
+});
+</script>
+
+</body>
+</html>
