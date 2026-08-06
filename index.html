@@ -3,235 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapa de Organizações da Sociedade Civil - Atendimento a Migrantes</title>
+  <title id="page-title">Mapa de Organizações da Sociedade Civil - Atendimento a Migrantes</title>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Leaflet MarkerCluster CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
-  <!-- Leaflet JS carregado no <head> para garantir que esteja disponível antes do código abaixo -->
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/mapa.css">
+
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #f5f5f5; }
-
-    #cabecalho {
-      background: #00984b;
-      color: white;
-      padding: 16px 24px;
-    }
-    #cabecalho h1 { font-size: 1.3rem; font-weight: bold; }
-    #cabecalho p { font-size: 0.9rem; margin-top: 4px; opacity: 0.9; }
-
-    #filtro-wrapper {
-      background: #00984b;
-      padding: 10px 24px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    #filtro-wrapper label {
-      color: white;
-      font-weight: bold;
-      font-size: 0.85rem;
-    }
-    #filtro-wrapper select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.9rem;
-      min-width: 200px;
-    }
-    #btn-limpar {
-      background: white;
-      color: #00984b;
-      border: none;
-      border-radius: 6px;
-      padding: 7px 14px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    #btn-limpar:hover { background: #e6f4ed; }
-
-    #mapa { height: 560px; width: 100%; }
-
-    #info-bar {
-      background: white;
-      border-top: 3px solid #00984b;
-      padding: 10px 24px;
-      font-size: 0.85rem;
-      color: #444;
-    }
-
-    .popup-osc { font-size: 0.85rem; line-height: 1.4; min-width: 220px; max-width: 280px; }
-    .popup-osc h3 { color: #00984b; font-size: 0.95rem; margin-bottom: 4px; }
-    .popup-osc .tag {
-      display: inline-block;
-      background: #e6f4ed;
-      color: #00984b;
-      border-radius: 10px;
-      padding: 1px 8px;
-      font-size: 0.72rem;
-      margin: 2px 3px 2px 0;
-      font-weight: bold;
-    }
-    .popup-osc .tag-nac {
-      background: #fff2d9;
-      color: #a3690a;
-    }
-    .popup-osc p { margin: 3px 0; }
-    .popup-osc a { color: #00984b; }
-  </style>
 </head>
 <body>
 
-<div id="cabecalho">
-  <h1>Mapa de Organizações da Sociedade Civil — Atendimento a Migrantes</h1>
-  <p>Listagem de OSC por município</p>
+<!-- Conteúdo principal -->
+<div class="main-content">
+
+  <!-- Barra de navegação -->
+  <nav id="navbar">
+    <div id="navbar-left">
+      <div id="navbar-logo">Mapa OSC</div>
+      <ul class="nav-links">
+        <li><a href="index.html" data-i18n="nav-home">Início</a></li>
+        <li><a href="sobre.html" data-i18n="nav-about">Sobre</a></li>
+        <li><a href="contato.html" data-i18n="nav-contact">Contato</a></li>
+        <li><a href="#" data-i18n="nav-help">Ajuda</a></li>
+      </ul>
+    </div>
+
+    <!-- Seletor de idioma -->
+    <div id="language-selector" onclick="toggleLanguageDropdown()">
+      <span class="flag-icon" id="current-flag">🇧🇷</span>
+      <span id="current-lang">Português</span>
+      <span class="arrow-down"><i class="fas fa-chevron-down"></i></span>
+      
+      <div id="language-dropdown">
+        <button class="language-option" onclick="changeLanguage('pt', '🇧🇷', 'Português')">
+          <span class="flag-icon">🇧🇷</span>
+          <span class="lang-name">Português</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('en', '🇺🇸', 'English')">
+          <span class="flag-icon">🇺🇸</span>
+          <span class="lang-name">English</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('es', '🇪🇸', 'Español')">
+          <span class="flag-icon">🇪🇸</span>
+          <span class="lang-name">Español</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('fr', '🇫🇷', 'Français')">
+          <span class="flag-icon">🇫🇷</span>
+          <span class="lang-name">Français</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('it', '🇮🇹', 'Italiano')">
+          <span class="flag-icon">🇮🇹</span>
+          <span class="lang-name">Italiano</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('de', '🇩🇪', 'Deutsch')">
+          <span class="flag-icon">🇩🇪</span>
+          <span class="lang-name">Deutsch</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('ja', '🇯🇵', '日本語')">
+          <span class="flag-icon">🇯🇵</span>
+          <span class="lang-name">日本語</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Cabeçalho -->
+  <div id="cabecalho">
+    <h1 id="header-title">Mapa de Organizações da Sociedade Civil — Atendimento a Migrantes</h1>
+    <p id="header-subtitle">Listagem de OSC por município</p>
+  </div>
+
+  <!-- Filtros -->
+  <div id="filtro-wrapper">
+    <label for="filtro-cidade" data-i18n="filter-city">Cidade:</label>
+    <select id="filtro-cidade">
+      <option value="" data-i18n="filter-all">— Todos os municípios —</option>
+    </select>
+
+    <label for="filtro-categoria" data-i18n="filter-category">Categoria geral:</label>
+    <select id="filtro-categoria">
+      <option value="" data-i18n="filter-all">— Todas as categorias —</option>
+    </select>
+
+    <label for="filtro-nacionalidade" data-i18n="filter-nationality">Nacionalidade atendida:</label>
+    <select id="filtro-nacionalidade">
+      <option value="" data-i18n="filter-all">— Todas as nacionalidades —</option>
+    </select>
+
+    <button id="btn-limpar" data-i18n="filter-clear">Limpar filtros</button>
+  </div>
+
+  <!-- Mapa -->
+  <div id="mapa"></div>
+
+  <!-- Info Bar -->
+  <div id="info-bar" data-i18n="info-displaying">Exibindo <strong id="contador">0</strong> organização(ões) no mapa.</div>
+
 </div>
 
-<div id="filtro-wrapper">
-  <label for="filtro-cidade">Cidade:</label>
-  <select id="filtro-cidade">
-    <option value="">— Todos os municípios —</option>
-  </select>
+<!-- Rodapé -->
+<footer id="footer">
+  <div id="footer-content">
+    <a href="termos-uso.html" data-i18n="footer-terms">Termos de Uso</a>
+    <span class="footer-divider">|</span>
+    <a href="#" data-i18n="footer-evaluation">Avaliação de Serviço</a>
+    <span class="footer-divider">|</span>
+    <a href="#" data-i18n="footer-campaign">Campanha de Cadastramento</a>
+    <span class="footer-divider">|</span>
+    <a href="https://www.transparencia.pr.gov.br/pte/denuncie" data-i18n="footer-report">Denuncie Corrupção</a>
+  </div>
+  <div id="footer-copy">
+    © 2026 Mapa OSC
+  </div>
+</footer>
 
-  <label for="filtro-categoria">Categoria geral:</label>
-  <select id="filtro-categoria">
-    <option value="">— Todas as categorias —</option>
-  </select>
-
-  <label for="filtro-nacionalidade">Nacionalidade atendida:</label>
-  <select id="filtro-nacionalidade">
-    <option value="">— Todas as nacionalidades —</option>
-  </select>
-
-  <button id="btn-limpar">Limpar filtros</button>
-</div>
-
-<div id="mapa"></div>
-<div id="info-bar">Exibindo <strong id="contador">0</strong> organização(ões) no mapa.</div>
-
-<!-- Dados dos locais/organizações/categorias ficam em arquivo separado (dados.js) -->
-<script src="dados.js"></script>
-
-<script>
-// Inicializa o mapa
-const map = L.map('mapa').setView([-24.8, -51.5], 7);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 18
-}).addTo(map);
-
-// Grupo de clusters
-let clusterGroup = L.markerClusterGroup();
-map.addLayer(clusterGroup);
-
-// Preenche o select de cidades
-const selectCidade = document.getElementById('filtro-cidade');
-const cidadesUnicas = [...new Set(localizacoes.map(l => l.city))].sort();
-cidadesUnicas.forEach(cidade => {
-  const opt = document.createElement('option');
-  opt.value = cidade;
-  opt.textContent = cidade;
-  selectCidade.appendChild(opt);
-});
-
-// Preenche o select de categorias
-const selectCategoria = document.getElementById('filtro-categoria');
-const categoriasUnicas = [...new Set(localizacoes.flatMap(l => l.categorias))].sort();
-categoriasUnicas.forEach(cat => {
-  const opt = document.createElement('option');
-  opt.value = cat;
-  opt.textContent = cat;
-  selectCategoria.appendChild(opt);
-});
-
-// Preenche o select de nacionalidades
-const selectNacionalidade = document.getElementById('filtro-nacionalidade');
-const nacionalidadesUnicas = [...new Set(localizacoes.flatMap(l => l.nacionalidades))].sort();
-nacionalidadesUnicas.forEach(nac => {
-  const opt = document.createElement('option');
-  opt.value = nac;
-  opt.textContent = nac;
-  selectNacionalidade.appendChild(opt);
-});
-
-function atualizarContador(n) {
-  document.getElementById('contador').textContent = n;
-}
-
-function montarPopup(loc) {
-  const tagsCategorias = loc.categorias.map(c => `<span class="tag">${c}</span>`).join('');
-  const tagsNacionalidades = loc.nacionalidades.map(n => `<span class="tag tag-nac">${n}</span>`).join('');
-  let html = `<div class="popup-osc"><h3>${loc.org}</h3>`;
-  html += `<p><strong>${loc.city}</strong>${loc.local ? ' — ' + loc.local : ''}</p>`;
-  if (loc.subcategoria) html += `<p>${loc.subcategoria}</p>`;
-  if (tagsCategorias) html += `<p>${tagsCategorias}</p>`;
-  if (tagsNacionalidades) html += `<p><em>Migrantes atendidos:</em><br>${tagsNacionalidades}</p>`;
-  if (loc.tema) html += `<p><em>Atuação:</em> ${loc.tema}</p>`;
-  if (loc.site) html += `<p><a href="${loc.site}" target="_blank" rel="noopener">Site</a></p>`;
-  if (loc.insta) html += `<p>${loc.insta}</p>`;
-  if (loc.selo) html += `<p><em>Selo Social:</em> ${loc.selo}</p>`;
-  if (loc.aceleradora) html += `<p><em>Aceleradora:</em> ${loc.aceleradora}</p>`;
-  if (loc.rede) html += `<p><em>Rede:</em> ${loc.rede}</p>`;
-  html += `</div>`;
-  return html;
-}
-
-function renderizarMarcadores() {
-  clusterGroup.clearLayers();
-
-  const filtroCidade = selectCidade.value;
-  const filtroCategoria = selectCategoria.value;
-  const filtroNacionalidade = selectNacionalidade.value;
-
-  const lista = localizacoes.filter(l => {
-    if (filtroCidade && l.city !== filtroCidade) return false;
-    if (filtroCategoria && !l.categorias.includes(filtroCategoria)) return false;
-    if (filtroNacionalidade && !l.nacionalidades.includes(filtroNacionalidade)) return false;
-    return true;
-  });
-
-  lista.forEach(loc => {
-    const marker = L.marker([loc.lat, loc.lng]);
-    marker.bindPopup(montarPopup(loc));
-    clusterGroup.addLayer(marker);
-  });
-
-  atualizarContador(lista.length);
-
-  // Ajusta o zoom para os pontos filtrados
-  if (lista.length > 0) {
-    const bounds = lista.map(l => [l.lat, l.lng]);
-    map.fitBounds(bounds, { padding: [40, 40] });
-  }
-}
-
-// Carrega todos ao iniciar
-renderizarMarcadores();
-
-// Filtros
-selectCidade.addEventListener('change', renderizarMarcadores);
-selectCategoria.addEventListener('change', renderizarMarcadores);
-selectNacionalidade.addEventListener('change', renderizarMarcadores);
-
-// Botão limpar
-document.getElementById('btn-limpar').addEventListener('click', () => {
-  selectCidade.value = '';
-  selectCategoria.value = '';
-  selectNacionalidade.value = '';
-  renderizarMarcadores();
-});
-</script>
+<!-- JavaScript - CORRIGIDO: apontando para os arquivos corretos -->
+<script src="js/index.js"></script>      <!-- Seus dados -->
+<script src="js/js-i18n.js"></script>    <!-- Traduções -->
+<script src="js/mapa.js"></script>       <!-- Lógica do mapa -->
 
 </body>
 </html>
