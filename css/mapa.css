@@ -1,0 +1,127 @@
+/* ===== CABEÇALHO ===== */
+#cabecalho {
+  background: #1a5a3b;
+  color: white;
+  padding: 16px 24px;
+}
+
+#cabecalho h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+#cabecalho p {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+/* ===== FILTROS ===== */
+#filtro-wrapper {
+  background: #1a5a3b;
+  padding: 10px 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#filtro-wrapper label {
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+}
+
+#filtro-wrapper select {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.85rem;
+  min-width: 200px;
+  background: white;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+#btn-limpar {
+  background: white;
+  color: #1a5a3b;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transition: background 0.2s;
+}
+
+#btn-limpar:hover {
+  background: #e6f0ea;
+}
+
+/* ===== MAPA ===== */
+#mapa {
+  height: 560px;
+  width: 100%;
+}
+
+/* ===== INFO BAR ===== */
+#info-bar {
+  background: white;
+  border-top: 2px solid #1a5a3b;
+  padding: 10px 24px;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* ===== POPUP ===== */
+.popup-osc {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.popup-osc h3 {
+  color: #1a5a3b;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.popup-osc .tag {
+  display: inline-block;
+  background: #e6f0ea;
+  color: #1a5a3b;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 0.7rem;
+  margin: 2px 3px 2px 0;
+  font-weight: 600;
+}
+
+.popup-osc .tag-nac {
+  background: #f5efe6;
+  color: #8a6d3b;
+}
+
+.popup-osc p {
+  margin: 3px 0;
+}
+
+.popup-osc a {
+  color: #1a5a3b;
+}
+
+/* ===== RESPONSIVIDADE FILTROS ===== */
+@media (max-width: 768px) {
+  #filtro-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #filtro-wrapper select {
+    min-width: unset;
+  }
+}
