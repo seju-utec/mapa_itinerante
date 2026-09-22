@@ -1,7 +1,3 @@
-// Dados das instituições cadastradas na planilha instituições.ods
-// Conteúdo gerado a partir da planilha mais recente (colunas do formulário de cadastro).
-// lat/lng representam a localização (centróide) do município informado no endereço da sede.
-
 const localizacoes = [
   {
     "city": "Curitiba",
@@ -21,7 +17,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "De segunda feira a sexta-feira das 9:00 as 17:00",
     "categorias": [
-      "Migração e refúgio"
+      "Migração E Refúgio"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -45,10 +41,10 @@ const localizacoes = [
     "forma_acesso": "Agendamento",
     "horarios": "Segunda-feira a Sexta-feira, das 08h às 12h e das 13h30 às 17h",
     "categorias": [
-      "Migração e refúgio"
+      "Migração E Refúgio"
     ],
     "nacionalidades_lista": [
-      "Qualquer nacionalidade"
+      "Qualquer Nacionalidade"
     ]
   },
   {
@@ -69,7 +65,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "De segunda ao domingo das 9hs até 21hs.",
     "categorias": [
-      "Migração e refúgio"
+      "Migração E Refúgio"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -117,7 +113,7 @@ const localizacoes = [
     "forma_acesso": "Agendamento",
     "horarios": "Segunda a sexta-feira",
     "categorias": [
-      "Encaminhamento a Organizações e Setores de Assistência a Migrantes"
+      "Encaminhamento A Organizações E Setores De Assistência A Migrantes"
     ],
     "nacionalidades_lista": [
       "Haitianos",
@@ -143,7 +139,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "Segunda a Sábado 08:00 às 18:00, Domingo das 09h a 13h",
     "categorias": [
-      "Desenvolvimento de projetos sociais"
+      "Desenvolvimento De Projetos Sociais"
     ],
     "nacionalidades_lista": [
       "Brasileiros",
@@ -167,14 +163,14 @@ const localizacoes = [
     "tipo_entidade": "OSC | ONG, Associação",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "crianças e adolescentes entre 6 e 17 anos",
-    "nacionalidades": "Venezuelana",
+    "nacionalidades": "Venezuelanos",
     "forma_acesso": "Lista de espera",
     "horarios": "Segunda a sexta das 8h30 às 11h e das 13h30 às 16h",
     "categorias": [
       "Assistência Social"
     ],
     "nacionalidades_lista": [
-      "Venezuelana"
+      "Venezuelanos"
     ]
   },
   {
@@ -246,10 +242,10 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "Sábados 14h a 18h",
     "categorias": [
-      "Migração e refúgio",
-      "Assistência social",
-      "Direitos humanos",
-      "Educação e Empreendedorismo"
+      "Migração E Refúgio",
+      "Assistência Social",
+      "Direitos Humanos",
+      "Educação E Empreendedorismo"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -269,14 +265,14 @@ const localizacoes = [
     "tipo_entidade": "Instituto",
     "areas_atuacao": "Migração e refúgio",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
-    "nacionalidades": "Árabe",
+    "nacionalidades": "Árabes",
     "forma_acesso": "Atendimento Remoto",
     "horarios": "Segunda a Sexta 8:00 às 18:00",
     "categorias": [
-      "Migração e refúgio"
+      "Migração E Refúgio"
     ],
     "nacionalidades_lista": [
-      "Árabe"
+      "Árabes"
     ]
   },
   {
@@ -300,7 +296,7 @@ const localizacoes = [
       "Assistência Social"
     ],
     "nacionalidades_lista": [
-      "Venezolanos",
+      "Venezuelanos",
       "Argentinos",
       "Colombianos",
       "Peruanos"
@@ -320,7 +316,7 @@ const localizacoes = [
     "tipo_entidade": "Instituto",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
-    "nacionalidades": "Haitianos, Venezuelanos e cubanos",
+    "nacionalidades": "Haitianos, Venezuelanos e Cubanos",
     "forma_acesso": "Presencial",
     "horarios": "Todos os dias.",
     "categorias": [
@@ -329,7 +325,7 @@ const localizacoes = [
     "nacionalidades_lista": [
       "Haitianos",
       "Venezuelanos",
-      "cubanos"
+      "Cubanos"
     ]
   },
   {
@@ -374,7 +370,7 @@ const localizacoes = [
     "forma_acesso": "Atendimento Remoto",
     "horarios": "Sábados, 10h",
     "categorias": [
-      "Educação e esportes"
+      "Educação E Esportes"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -398,13 +394,13 @@ const localizacoes = [
     "forma_acesso": "Presencial | Atendimento Remoto",
     "horarios": "Segunda a Quinta 8:00 às 18:00",
     "categorias": [
-      "Migração e refúgio",
-      "Assistência social",
-      "Direitos humanos",
-      "Educação e Empreendedorismo"
+      "Migração E Refúgio",
+      "Assistência Social",
+      "Direitos Humanos",
+      "Educação E Empreendedorismo"
     ],
     "nacionalidades_lista": [
-      "Qualquer nacionalidade"
+      "Qualquer Nacionalidade"
     ]
   },
   {
@@ -426,11 +422,11 @@ const localizacoes = [
     "horarios": "Segunda a Sexta 8:00 às 18:00",
     "categorias": [
       "Saúde",
-      "Apoio psicossocial",
-      "Capacitação profissional"
+      "Apoio Psicossocial",
+      "Capacitação Profissional"
     ],
     "nacionalidades_lista": [
-      "Qualquer nacionalidade"
+      "Qualquer Nacionalidade"
     ]
   },
   {
@@ -447,16 +443,16 @@ const localizacoes = [
     "tipo_entidade": "OSC | ONG, Igreja",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
-    "nacionalidades": "Venezuelano, Bangladesh, Sudão",
+    "nacionalidades": "Venezuelanos, Bangladeshis, Sudaneses",
     "forma_acesso": "Atendimento Remoto",
     "horarios": "Terça a Quinta das 9:00 16:30",
     "categorias": [
       "Assistência Social"
     ],
     "nacionalidades_lista": [
-      "Venezuelano",
-      "Bangladesh",
-      "Sudão"
+      "Venezuelanos",
+      "Bangladeshis",
+      "Sudaneses"
     ]
   },
   {
@@ -473,7 +469,7 @@ const localizacoes = [
     "tipo_entidade": "OSC | ONG",
     "areas_atuacao": "Educação",
     "publico_principal": "Crianças e adolescentes",
-    "nacionalidades": "Brasileiros e venezuelanos",
+    "nacionalidades": "Brasileiros e Venezuelanos",
     "forma_acesso": "Presencial",
     "horarios": "Segunda a Sexta 9:00 às 17:00",
     "categorias": [
@@ -481,7 +477,7 @@ const localizacoes = [
     ],
     "nacionalidades_lista": [
       "Brasileiros",
-      "venezuelanos"
+      "Venezuelanos"
     ]
   }
 ];
