@@ -1,7 +1,14 @@
+// Dados das instituições cadastradas na planilha instituições.ods
+// Conteúdo gerado a partir da planilha mais recente (colunas do formulário de cadastro).
+// lat/lng representam a localização (centróide) do município informado no endereço da sede.
+
 const localizacoes = [
   {
-    "nome": "Associação Amigas do bem Curitiba",
-    "data_fundacao": "2023-05-02 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Associação Amigas do bem Curitiba",
+    "fundacao": "2023-05-02",
     "email": "amigasdobemcuritiba@gmail.com",
     "endereco": "Rua Manoel Ricardo de Oliveira 32 bairro novo A sítio cercado.",
     "telefone": "41998600978 ou 41997335455",
@@ -12,28 +19,44 @@ const localizacoes = [
     "publico_principal": "Famílias de migrantes venezolanos e cubanos.",
     "nacionalidades": "Venezuelanos",
     "forma_acesso": "Presencial",
-    "horario": "De segunda feira a sexta-feira das 9:00 as 17:00"
+    "horarios": "De segunda feira a sexta-feira das 9:00 as 17:00",
+    "categorias": [
+      "Migração e refúgio"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "Cáritas Diocesana de Toledo",
-    "data_fundacao": "1968-10-25 00:00:00",
+    "city": "Toledo",
+    "lat": -24.7246,
+    "lng": -53.7413,
+    "org": "Cáritas Diocesana de Toledo",
+    "fundacao": "1968-10-25",
     "email": "caritasdiocesanadetoledo@gmail.com",
     "endereco": "Rua General Rondon, 2006, Jardim La Salle, Toledo-PR, CEP 85902-090",
     "telefone": "(45) 99830-0493",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/caritastoledopr/",
     "tipo_entidade": "OSC | ONG, Igreja",
     "areas_atuacao": "Migração e refúgio",
     "publico_principal": "Migrantes",
     "nacionalidades": "Qualquer nacionalidade",
     "forma_acesso": "Agendamento",
-    "horario": "Segunda-feira a Sexta-feira, das 08h às 12h e das 13h30 às 17h"
+    "horarios": "Segunda-feira a Sexta-feira, das 08h às 12h e das 13h30 às 17h",
+    "categorias": [
+      "Migração e refúgio"
+    ],
+    "nacionalidades_lista": [
+      "Qualquer nacionalidade"
+    ]
   },
-
   {
-    "nome": "Instituto Semear",
-    "data_fundacao": "2025-09-02 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Instituto Semear",
+    "fundacao": "2025-09-02",
     "email": "jefersonleal@msn.com",
     "endereco": "RUA ANTÔNIO REBELATTO 1455 - SOB 01",
     "telefone": "53999660740",
@@ -44,92 +67,148 @@ const localizacoes = [
     "publico_principal": "Imigrantes em situação de vulnerabilidade social e econômica acolhidos pelo Instituto Semear.",
     "nacionalidades": "Venezuelanos",
     "forma_acesso": "Presencial",
-    "horario": "De segunda ao domingo das 9hs até 21hs."
+    "horarios": "De segunda ao domingo das 9hs até 21hs.",
+    "categorias": [
+      "Migração e refúgio"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "Veneza Unidos con Alegría",
-    "data_fundacao": "2024-09-20 00:00:00",
+    "city": "Colombo",
+    "lat": -25.2925,
+    "lng": -49.2263,
+    "org": "Veneza Unidos con Alegría",
+    "fundacao": "2024-09-20",
     "email": "graphictopdigitalpr@gmail.com",
     "endereco": "Rua Cerro Azul 397 Paloma Colombo",
     "telefone": "41988756544",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/venezaunidosconalegria/",
     "tipo_entidade": "Associação",
     "areas_atuacao": "Empreendedorismo",
     "publico_principal": "Público Migrante",
     "nacionalidades": "Venezuelanos",
     "forma_acesso": "Agendamento",
-    "horario": "Horario de oficina"
+    "horarios": "Horario de oficina",
+    "categorias": [
+      "Empreendedorismo"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "Instituto Boneca Feliz",
-    "data_fundacao": "2026-02-14 00:00:00",
+    "city": "Almirante Tamandaré",
+    "lat": -25.3247,
+    "lng": -49.31,
+    "org": "Instituto Boneca Feliz",
+    "fundacao": "2026-02-14",
     "email": "instituto.boneca.feliz@gmail.com",
     "endereco": "Av. Rafaela, 23 - Restinga Seca - Almirante Tamandaré/PR CEP: 83512-030",
     "telefone": "(31) 99957-9052",
-    "site": null,
+    "site": "",
     "redes_sociais": "Não Possui",
     "tipo_entidade": "OSC | ONG",
     "areas_atuacao": "Encaminhamento a Organizações e Setores de Assistência a Migrantes",
     "publico_principal": "Pessoas em geral",
     "nacionalidades": "Haitianos, Venezuelanos, Cubanos",
     "forma_acesso": "Agendamento",
-    "horario": "Segunda a sexta-feira"
+    "horarios": "Segunda a sexta-feira",
+    "categorias": [
+      "Encaminhamento a Organizações e Setores de Assistência a Migrantes"
+    ],
+    "nacionalidades_lista": [
+      "Haitianos",
+      "Venezuelanos",
+      "Cubanos"
+    ]
   },
-
   {
-    "nome": "Missão Gênesis",
-    "data_fundacao": "2021-09-14 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Missão Gênesis",
+    "fundacao": "2021-09-14",
     "email": "missaogenesisoficial@gmail.com",
     "endereco": "Rua São Francisco 126",
     "telefone": "+55 (41) 99822-2243",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/missaogenesisoficial/",
     "tipo_entidade": "Igreja",
     "areas_atuacao": "Desenvolvimento de projetos sociais",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Brasileiros, Venezuelanos, Haitianos, Peruanos e Argentinos.",
     "forma_acesso": "Presencial",
-    "horario": "Segunda a Sábado 08:00 às 18:00, Domingo das 09h a 13h"
+    "horarios": "Segunda a Sábado 08:00 às 18:00, Domingo das 09h a 13h",
+    "categorias": [
+      "Desenvolvimento de projetos sociais"
+    ],
+    "nacionalidades_lista": [
+      "Brasileiros",
+      "Venezuelanos",
+      "Haitianos",
+      "Peruanos",
+      "Argentinos"
+    ]
   },
-
   {
-    "nome": "Recanto Esperança",
-    "data_fundacao": "2004-12-09 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Recanto Esperança",
+    "fundacao": "2004-12-09",
     "email": "contato@recantoesperanca.org.br",
     "endereco": "Rua Laércio Nakashima, 110 Uberaba Curitiba PR CEP81550572",
     "telefone": "41 98518-8700",
     "site": "www.recantoesperanca.org.br",
-    "redes_sociais": "https://www.instagram.com/esperanca.recanto/https://pt-br.facebook.com/recantoesperancaOnghttps://br.linkedin.com/company/recantoesperancahttps://youtube.com/@recantoesperanca",
+    "redes_sociais": "https://www.instagram.com/esperanca.recanto/ | https://pt-br.facebook.com/recantoesperancaOng | https://br.linkedin.com/company/recantoesperanca | https://youtube.com/@recantoesperanca",
     "tipo_entidade": "OSC | ONG, Associação",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "crianças e adolescentes entre 6 e 17 anos",
     "nacionalidades": "Venezuelana",
     "forma_acesso": "Lista de espera",
-    "horario": "Segunda a sexta das 8h30 às 11h e das 13h30 às 16h"
+    "horarios": "Segunda a sexta das 8h30 às 11h e das 13h30 às 16h",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelana"
+    ]
   },
-
   {
-    "nome": "Associação de Capoeira Navalha de Prata Megê",
-    "data_fundacao": "2025-11-26 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Associação de Capoeira Navalha de Prata Megê",
+    "fundacao": "2025-11-26",
     "email": "gruponavalhadeprata@gmail.com",
     "endereco": "rua da pedreira, 614",
     "telefone": "41985086381",
-    "site": null,
-    "redes_sociais": "https://www.instagram.com/navalhadeprata1?igsh=bGZ4MW5iN3pjenRohttps://youtube.com/@navalhadepratadino5728?si=NFFPwuQuRSOloWWyhttps://www.facebook.com/share/1H4mjuKJwz/https://www.facebook.com/share/185j2KjBbn/https://www.tiktok.com/@dino131304?_r=1&_t=ZS-94WKuIhmAj9",
+    "site": "",
+    "redes_sociais": "https://www.instagram.com/navalhadeprata1?igsh=bGZ4MW5iN3pjenRo | https://youtube.com/@navalhadepratadino5728?si=NFFPwuQuRSOloWWy | https://www.facebook.com/share/1H4mjuKJwz/ | https://www.facebook.com/share/185j2KjBbn/ | https://www.tiktok.com/@dino131304?_r=1&_t=ZS-94WKuIhmAj9",
     "tipo_entidade": "Associação",
     "areas_atuacao": "Esporte, Cultura, Lazer",
     "publico_principal": "crianças 06 anos a 13 anos",
     "nacionalidades": "Haitianos",
     "forma_acesso": "Presencial",
-    "horario": "a partir das 10h"
+    "horarios": "a partir das 10h",
+    "categorias": [
+      "Esporte",
+      "Cultura",
+      "Lazer"
+    ],
+    "nacionalidades_lista": [
+      "Haitianos"
+    ]
   },
-
   {
-    "nome": "Associação Beneficente Projeto Nova Terra",
-    "data_fundacao": "2010-02-25 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Associação Beneficente Projeto Nova Terra",
+    "fundacao": "2010-02-25",
     "email": "secretariaongnovaterra@hotmail.com",
     "endereco": "Rua Enemézio do Rosário Junior, 350Ponto de referência: ONG NOVA TERRA",
     "telefone": "(41)98455-6490 Adriano Ribas Presidente",
@@ -140,28 +219,48 @@ const localizacoes = [
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Brasileiros e Venezuelanos",
     "forma_acesso": "Presencial",
-    "horario": "Segunda a Sexta 8:00 às 18:00"
+    "horarios": "Segunda a Sexta 8:00 às 18:00",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Brasileiros",
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "INSTITUTO CULTURAL E FOLCLORICO ALMA TRICOLOR",
-    "data_fundacao": "2026-07-17 00:00:00",
+    "city": "Fazenda Rio Grande",
+    "lat": -25.6624,
+    "lng": -49.3073,
+    "org": "INSTITUTO CULTURAL E FOLCLORICO ALMA TRICOLOR",
+    "fundacao": "2026-07-17",
     "email": "almatricolorcwb@gmail.com",
     "endereco": "Rua Bigua n° 1337- CEP: 83824-466. Bairro Gralha Azul- Fazenda Rio Grande, PR",
     "telefone": "41-98757 1082",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/almatricolorcwb/",
     "tipo_entidade": "Instituto",
     "areas_atuacao": "Migração e refúgio, Assistência social, Direitos humanos, Educação e Empreendedorismo",
     "publico_principal": "Crianças e adolescentes migrantes",
     "nacionalidades": "Venezuelanos",
     "forma_acesso": "Presencial",
-    "horario": "Sábados 14h a 18h"
+    "horarios": "Sábados 14h a 18h",
+    "categorias": [
+      "Migração e refúgio",
+      "Assistência social",
+      "Direitos humanos",
+      "Educação e Empreendedorismo"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "INSTITUTO ABUNA",
-    "data_fundacao": "2017-06-17 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "INSTITUTO ABUNA",
+    "fundacao": "2017-06-17",
     "email": "CONTATO@ABUNA.ORG.BR",
     "endereco": "AV MAL FLORIANO PEIXOTO, 2590 - PAROLIN, CURITIBA, CEP 80.220-001",
     "telefone": "41-3010-7451",
@@ -172,28 +271,47 @@ const localizacoes = [
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Árabe",
     "forma_acesso": "Atendimento Remoto",
-    "horario": "Segunda a Sexta 8:00 às 18:00"
+    "horarios": "Segunda a Sexta 8:00 às 18:00",
+    "categorias": [
+      "Migração e refúgio"
+    ],
+    "nacionalidades_lista": [
+      "Árabe"
+    ]
   },
-
   {
-    "nome": "Associação de Peruanos Residentes No Estado Do Parana- Associação Contigo Perú",
-    "data_fundacao": "2024-05-17 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Associação de Peruanos Residentes No Estado Do Parana- Associação Contigo Perú",
+    "fundacao": "2024-05-17",
     "email": "Associacaocontigoperuparana@gmail.com",
     "endereco": "Rua evaristo da veiga 2016,boqueirão Curitiba Parana",
     "telefone": "41996478232",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/contigoperu.pr",
     "tipo_entidade": "Associação",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "-",
     "nacionalidades": "Venezolanos, Argentinos, Colombianos e Peruanos",
     "forma_acesso": "Presencial",
-    "horario": "São variadas"
+    "horarios": "São variadas",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Venezolanos",
+      "Argentinos",
+      "Colombianos",
+      "Peruanos"
+    ]
   },
-
   {
-    "nome": "Instituto Semear",
-    "data_fundacao": "2025-09-02 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Instituto Semear",
+    "fundacao": "2025-09-02",
     "email": "jefersonleal@msn.com",
     "endereco": "Antonio Rebelatto1455 Boqueirão - Curitiba PR",
     "telefone": "53999660740",
@@ -204,44 +322,70 @@ const localizacoes = [
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Haitianos, Venezuelanos e cubanos",
     "forma_acesso": "Presencial",
-    "horario": "Todos os dias."
+    "horarios": "Todos os dias.",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Haitianos",
+      "Venezuelanos",
+      "cubanos"
+    ]
   },
-
   {
-    "nome": "Associação dos Estudantes Guineenses em Curitiba",
-    "data_fundacao": "2016-06-26 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Associação dos Estudantes Guineenses em Curitiba",
+    "fundacao": "2016-06-26",
     "email": "curitibaguineense@gmail.com",
     "endereco": "Cep: 802.300.90 - Centro , Rua Alferes Poli 271",
     "telefone": "41998272054",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/associacaoguineense/",
     "tipo_entidade": "Associação",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Guineenses",
     "forma_acesso": "Presencial",
-    "horario": "Não temos horário especifico, depende de cada demanda."
+    "horarios": "Não temos horário especifico, depende de cada demanda.",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Guineenses"
+    ]
   },
-
   {
-    "nome": "Instituto Espaço Nova Vida",
-    "data_fundacao": "2008-11-28 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Instituto Espaço Nova Vida",
+    "fundacao": "2008-11-28",
     "email": "Institutoespaconv@hotmail.com",
     "endereco": "Rua Diogo Mugiatti,785 - Boqueirão Curitiba. PR",
     "telefone": "41 991519553",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/instituto.espaconovavida?stkn=NXB3MXlmN3MwYXdl",
     "tipo_entidade": "OSC | ONG",
     "areas_atuacao": "Educação e esportes",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Venezuelanos",
     "forma_acesso": "Atendimento Remoto",
-    "horario": "Sábados, 10h"
+    "horarios": "Sábados, 10h",
+    "categorias": [
+      "Educação e esportes"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelanos"
+    ]
   },
-
   {
-    "nome": "CÁRITAS DIOCESANA DE PONTA GROSSA",
-    "data_fundacao": "2007-08-05 00:00:00",
+    "city": "Ponta Grossa",
+    "lat": -25.095,
+    "lng": -50.1619,
+    "org": "CÁRITAS DIOCESANA DE PONTA GROSSA",
+    "fundacao": "2007-08-05",
     "email": "administrativo@caritaspontagrossa.org.br",
     "endereco": "RUA SALVADOR DE MENDONÇA, 565 NOVA RUSSIA CEP 84053-040 PONTA GROSSA PARANÁ",
     "telefone": "42 32261165 / 42 98873-8266",
@@ -252,44 +396,75 @@ const localizacoes = [
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Qualquer nacionalidade",
     "forma_acesso": "Presencial | Atendimento Remoto",
-    "horario": "Segunda a Quinta 8:00 às 18:00"
+    "horarios": "Segunda a Quinta 8:00 às 18:00",
+    "categorias": [
+      "Migração e refúgio",
+      "Assistência social",
+      "Direitos humanos",
+      "Educação e Empreendedorismo"
+    ],
+    "nacionalidades_lista": [
+      "Qualquer nacionalidade"
+    ]
   },
-
   {
-    "nome": "A Associação des Jeunes Haïtiens en Sciences de la Santé (AJHASS)",
-    "data_fundacao": "2020-07-19 00:00:00",
+    "city": "Foz do Iguaçu",
+    "lat": -25.5469,
+    "lng": -54.5882,
+    "org": "A Associação des Jeunes Haïtiens en Sciences de la Santé (AJHASS)",
+    "fundacao": "2020-07-19",
     "email": "ajhass.org@gmail.com",
     "endereco": "Rua Manoel Bandeira, 318, Vila Brasilia< Foz do Iguaçu, PR",
     "telefone": "45 9820-7532",
     "site": "www.ajhass.org",
     "redes_sociais": "https://www.instagram.com/ajhass_esv/",
     "tipo_entidade": "Associação",
-    "areas_atuacao": "Saúde, Apoio psicossocial, Capacitação profissional",
+    "areas_atuacao": "Saúde, Apoio psicossocial , Capacitação profissional",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Qualquer nacionalidade",
     "forma_acesso": "Presencial",
-    "horario": "Segunda a Sexta 8:00 às 18:00"
+    "horarios": "Segunda a Sexta 8:00 às 18:00",
+    "categorias": [
+      "Saúde",
+      "Apoio psicossocial",
+      "Capacitação profissional"
+    ],
+    "nacionalidades_lista": [
+      "Qualquer nacionalidade"
+    ]
   },
-
   {
-    "nome": "CÁRITAS DIOCESANA DE JACAREZINHO",
-    "data_fundacao": "1966-05-13 00:00:00",
+    "city": "Jacarezinho",
+    "lat": -23.1597,
+    "lng": -49.9739,
+    "org": "CÁRITAS DIOCESANA DE JACAREZINHO",
+    "fundacao": "1966-05-13",
     "email": "caritasjacarezinho@gmail.com",
     "endereco": "Avenida Getúlio Vargas, 401, centro",
     "telefone": "4399617-9040",
-    "site": null,
+    "site": "",
     "redes_sociais": "https://www.instagram.com/caritasdiocesanajacarezinho/",
     "tipo_entidade": "OSC | ONG, Igreja",
     "areas_atuacao": "Assistência Social",
     "publico_principal": "Imigrantes em situação de vulnerabilidade social",
     "nacionalidades": "Venezuelano, Bangladesh, Sudão",
     "forma_acesso": "Atendimento Remoto",
-    "horario": "Terça a Quinta das 9:00 16:30"
+    "horarios": "Terça a Quinta das 9:00 16:30",
+    "categorias": [
+      "Assistência Social"
+    ],
+    "nacionalidades_lista": [
+      "Venezuelano",
+      "Bangladesh",
+      "Sudão"
+    ]
   },
-
   {
-    "nome": "Atuação Global",
-    "data_fundacao": "2008-04-27 00:00:00",
+    "city": "Curitiba",
+    "lat": -25.4284,
+    "lng": -49.2733,
+    "org": "Atuação Global",
+    "fundacao": "2008-04-27",
     "email": "contato@atuacaoglobal.org.br",
     "endereco": "Pedro Foggiatto, 530",
     "telefone": "41 999675416",
@@ -300,13 +475,16 @@ const localizacoes = [
     "publico_principal": "Crianças e adolescentes",
     "nacionalidades": "Brasileiros e venezuelanos",
     "forma_acesso": "Presencial",
-    "horario": "Segunda a Sexta 9:00 às 17:00"
+    "horarios": "Segunda a Sexta 9:00 às 17:00",
+    "categorias": [
+      "Educação"
+    ],
+    "nacionalidades_lista": [
+      "Brasileiros",
+      "venezuelanos"
+    ]
   }
 ];
 
-const instituicoes = localizacoes;
-
-if (typeof window !== "undefined") {
-  window.localizacoes = localizacoes;
-  window.instituicoes = instituicoes;
-}
+// Compatibilidade com versões do mapa que usam esses nomes.
+const dadosInstituicoes = localizacoes;
