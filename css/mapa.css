@@ -403,6 +403,15 @@
   cursor: pointer;
 }
 
+#filtro-wrapper .multi-select-options .multi-select-option {
+  color: #333333 !important;
+}
+
+#filtro-wrapper .multi-select-options .multi-select-option:hover {
+  background-color: #f0f0f0 !important;
+  color: #333333 !important;
+}
+
 @media (max-width: 700px) {
     #mapa .leaflet-popup-content-wrapper {
         max-width: calc(100vw - 30px);
