@@ -155,7 +155,23 @@ function montarPopup(loc) {
   let colunaDireita = ``;
   if (texto(loc.email)) colunaDireita += `<div class="popup-contato-item"><b>E-mail:</b><br>${escapar(loc.email)}</div>`;
   if (texto(loc.telefone)) colunaDireita += `<div class="popup-contato-item"><b>Telefone:</b><br>${escapar(loc.telefone)}</div>`;
-  if (texto(loc.redes_sociais)) colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${escapar(loc.redes_sociais)}</div>`;
+  if (texto(loc.redes_sociais)) {
+    // Separa as redes sociais por "|" (você tem vários links separados por "|")
+    const redes = texto(loc.redes_sociais)
+      .split('|')
+      .map(r => r.trim())
+      .filter(r => r.length > 0);
+  
+    // Cria os links clicáveis mantendo o texto completo
+    const linksRedes = redes.map(rede => {
+      // Verifica se já tem http/https, senão adiciona
+      const href = /^https?:\/\//i.test(rede) ? rede : `https://${rede}`;
+      // Mantém o texto original completo (sem encurtar)
+      return `<a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(rede)}</a>`;
+    }).join('<br>'); // Uma rede social por linha
+  
+    colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${linksRedes}</div>`;
+  }
   if (texto(loc.site)) {
     const site = texto(loc.site);
     const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
