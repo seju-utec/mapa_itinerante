@@ -65,6 +65,8 @@
 #mapa {
   height: 560px;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 /* ===== INFO BAR ===== */
@@ -84,8 +86,7 @@
   max-width: 100%;
 }
 
-/* Popup das instituições: aproveita o espaço disponível no computador
-   sem fazer o mapa sair do lugar ao abrir as informações. */
+/* Popup das instituições */
 .popup-instituicao .leaflet-popup-content-wrapper {
   width: 650px;
   max-width: calc(100vw - 80px);
@@ -132,6 +133,139 @@
   color: #1a5a3b;
 }
 
+/* ===== POPUP ORGANIZAÇÃO (NOVO LAYOUT) ===== */
+.popup-organizacao {
+    max-width: 650px;
+    font-size: 14px;
+}
+
+.popup-titulo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #155b39;
+    margin-bottom: 10px;
+}
+
+.popup-endereco {
+    margin-bottom: 15px;
+}
+
+.popup-secao {
+    margin-bottom: 15px;
+}
+
+.popup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.popup-card {
+    background: #f4f4f4;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.popup-contatos {
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.popup-contatos div {
+    margin-bottom: 10px;
+}
+
+/* Layout de duas colunas dentro do popup */
+.popup-conteudo {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.popup-coluna-esquerda {
+  flex: 6;
+}
+
+.popup-coluna-direita {
+  flex: 4;
+  border-left: 1px solid #eee;
+  padding-left: 15px;
+}
+
+.popup-contato-item {
+  margin-bottom: 10px;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+/* ===== MULTI-SELECT DE CATEGORIAS (NOVO) ===== */
+.multi-select {
+  position: relative;
+  min-width: 200px;
+}
+
+.multi-select-trigger {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #333;
+  user-select: none;
+}
+
+.multi-select-trigger .arrow-down {
+  margin-left: 10px;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.multi-select-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 2px;
+}
+
+.multi-select-options.show {
+  display: block;
+}
+
+.multi-select-option {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #333;
+}
+
+.multi-select-option:hover {
+  background: #f0f0f0;
+}
+
+.multi-select-option input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
 /* ===== RESPONSIVIDADE DO POPUP ===== */
 @media (max-width: 768px) {
   .popup-instituicao .leaflet-popup-content-wrapper {
@@ -159,6 +293,10 @@
   #filtro-wrapper select {
     min-width: unset;
   }
+  
+  .multi-select {
+    min-width: unset;
+  }
 }
 
 /* Popup de informações: tamanho limitado à tela e rolagem interna */
@@ -176,19 +314,12 @@
     padding-right: 14px;
 }
 
-/* Barra de rolagem do conteúdo */
 .leaflet-popup-content::-webkit-scrollbar {
     width: 10px;
 }
 
 .leaflet-popup-content::-webkit-scrollbar-thumb {
     border-radius: 6px;
-}
-
-
-#mapa {
-    position: relative;
-    overflow: hidden;
 }
 
 #mapa .leaflet-popup {
@@ -218,7 +349,6 @@
 }
 
 @media (max-width: 700px) {
-
     #mapa .leaflet-popup-content-wrapper {
         max-width: calc(100vw - 30px);
     }
@@ -227,101 +357,11 @@
         max-width: calc(100vw - 50px);
         max-height: calc(100vh - 120px);
     }
-}
-
-.popup-organizacao {
-    max-width: 650px;
-    font-size: 14px;
-}
-
-.popup-titulo {
-    font-size: 22px;
-    font-weight: bold;
-    color: #155b39;
-    margin-bottom: 10px;
-}
-
-.popup-endereco {
-    margin-bottom: 15px;
-}
-
-.popup-secao {
-    margin-bottom: 15px;
-}
-
-.popup-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.popup-card {
-    background: #f5f7f7;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-.popup-contatos {
-    border-top: 1px solid #ddd;
-    padding-top: 15px;
-}
-
-.popup-contatos div {
-    margin-bottom: 10px;
-}
-
-.popup-conteudo {
-  display: flex;
-  gap: 15px; /* Espaço entre as colunas */
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-/* Coluna da Esquerda (Ocupa 60% do espaço) */
-.popup-coluna-esquerda {
-  flex: 6;
-}
-
-/* Coluna da Direita (Ocupa 40% do espaço) */
-.popup-coluna-direita {
-  flex: 4;
-  border-left: 1px solid #eee; /* Linha divisória opcional */
-  padding-left: 15px;
-}
-
-/* Estilo para os itens de contato na direita */
-.popup-contato-item {
-  margin-bottom: 10px;
-  font-size: 13px;
-  word-break: break-word; /* Evita que e-mails longos quebrem o layout */
-}
-
-/* Garante que o grid de baixo ocupe a largura total */
-.popup-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.popup-card {
-  background: #f4f4f4;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-
-@media (max-width: 700px) {
-
+    
     .popup-grid {
         grid-template-columns: 1fr;
     }
-
-}
-
-@media (max-width: 700px) {
+    
     .leaflet-popup-content-wrapper {
         max-width: calc(100vw - 30px);
     }
@@ -332,4 +372,3 @@
         max-height: calc(100vh - 100px);
     }
 }
-
