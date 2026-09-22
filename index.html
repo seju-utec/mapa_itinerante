@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Mapa de Organizações da Sociedade Civil - Atendimento a Migrantes</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/mapa.css">
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+
+  <!-- Barra de navegação -->
+  <nav id="navbar">
+    <div id="navbar-left">
+      <div id="navbar-logo">Mapa OSC</div>
+      <ul class="nav-links">
+        <li><a href="index.html" data-i18n="nav-home">Início</a></li>
+        <li><a href="sobre.html" data-i18n="nav-about">Sobre</a></li>
+        <li><a href="contato.html" data-i18n="nav-contact">Contato</a></li>
+        <li><a href="#" data-i18n="nav-help">Ajuda</a></li>
+      </ul>
+    </div>
+
+    <!-- Seletor de idioma -->
+    <div id="language-selector" onclick="toggleLanguageDropdown()">
+      <span class="flag-icon" id="current-flag">🇧🇷</span>
+      <span id="current-lang">Português</span>
+      <span class="arrow-down"><i class="fas fa-chevron-down"></i></span>
+      
+      <div id="language-dropdown">
+        <button class="language-option" onclick="changeLanguage('pt', '🇧🇷', 'Português')">
+          <span class="flag-icon">🇧🇷</span>
+          <span class="lang-name">Português</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('en', '🇺🇸', 'English')">
+          <span class="flag-icon">🇺🇸</span>
+          <span class="lang-name">English</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('es', '🇪🇸', 'Español')">
+          <span class="flag-icon">🇪🇸</span>
+          <span class="lang-name">Español</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('fr', '🇫🇷', 'Français')">
+          <span class="flag-icon">🇫🇷</span>
+          <span class="lang-name">Français</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('it', '🇮🇹', 'Italiano')">
+          <span class="flag-icon">🇮🇹</span>
+          <span class="lang-name">Italiano</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('de', '🇩🇪', 'Deutsch')">
+          <span class="flag-icon">🇩🇪</span>
+          <span class="lang-name">Deutsch</span>
+        </button>
+        <button class="language-option" onclick="changeLanguage('ja', '🇯🇵', '日本語')">
+          <span class="flag-icon">🇯🇵</span>
+          <span class="lang-name">日本語</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Cabeçalho -->
+  <div id="cabecalho">
+    <h1 id="header-title">Mapa de Organizações da Sociedade Civil — Atendimento a Migrantes</h1>
+    <p id="header-subtitle">Listagem de OSC por município</p>
+  </div>
+
+  <!-- Filtros -->
+  <div id="filtro-wrapper">
+    <label for="filtro-cidade" data-i18n="filter-city">Cidade:</label>
+    <select id="filtro-cidade">
+      <option value="" data-i18n="filter-all">— Todos os municípios —</option>
+    </select>
+
+    <label for="filtro-categoria" data-i18n="filter-category">Categoria geral:</label>
+    <select id="filtro-categoria">
+      <option value="" data-i18n="filter-all">— Todas as categorias —</option>
+    </select>
+
+    <label for="filtro-nacionalidade" data-i18n="filter-nationality">Nacionalidade atendida:</label>
+    <select id="filtro-nacionalidade">
+      <option value="" data-i18n="filter-all">— Todas as nacionalidades —</option>
+    </select>
+
+    <button id="btn-limpar" data-i18n="filter-clear">Limpar filtros</button>
+  </div>
+
+  <!-- Mapa -->
+  <div id="mapa"></div>
+
+  <!-- Info Bar -->
+  <div id="info-bar" data-i18n="info-displaying">Exibindo <strong id="contador">0</strong> organização(ões) no mapa.</div>
+
+</div>
+
+<!-- Rodapé -->
+<footer id="footer">
+  <div id="footer-content">
+    <a href="termos-uso.html" data-i18n="footer-terms">Termos de Uso</a>
+    <span class="footer-divider">|</span>
+    <a href="#" data-i18n="footer-evaluation">Avaliação de Serviço</a>
+    <span class="footer-divider">|</span>
+    <a href="#" data-i18n="footer-campaign">Campanha de Cadastramento</a>
+    <span class="footer-divider">|</span>
+    <a href="https://www.transparencia.pr.gov.br/pte/denuncie" data-i18n="footer-report">Denuncie Corrupção</a>
+  </div>
+  <div id="footer-copy">
+    © 2026 Mapa OSC
+  </div>
+</footer>
+
+<!-- JavaScript - CORRIGIDO: apontando para os arquivos corretos -->
+<script src="js/index.js"></script>      <!-- Seus dados -->
+<script src="js/js-i18n.js"></script>    <!-- Traduções -->
+<script src="js/mapa.js"></script>       <!-- Lógica do mapa -->
+
+</body>
+</html>
