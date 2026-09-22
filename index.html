@@ -90,10 +90,16 @@
       <option value="" data-i18n="filter-all">— Todos os municípios —</option>
     </select>
 
-    <label for="filtro-categoria" data-i18n="filter-category">Categoria geral:</label>
-    <select id="filtro-categoria">
-      <option value="" data-i18n="filter-all">— Todas as categorias —</option>
-    </select>
+    <label data-i18n="filter-category">Categoria geral:</label>
+    <div class="multi-select" id="multi-select-categoria">
+      <div class="multi-select-trigger" id="trigger-categoria">
+        <span id="label-categoria" data-i18n="filter-all">— Todas as categorias —</span>
+        <span class="arrow-down"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="multi-select-options" id="options-categoria">
+        <!-- As opções serão inseridas aqui pelo JavaScript -->
+      </div>
+    </div>
 
     <label for="filtro-nacionalidade" data-i18n="filter-nationality">Nacionalidade atendida:</label>
     <select id="filtro-nacionalidade">
@@ -127,7 +133,7 @@
   </div>
 </footer>
 
-<!-- JavaScript - CORRIGIDO: apontando para os arquivos corretos -->
+<!-- JavaScript -->
 <script src="js/index.js"></script>      <!-- Seus dados -->
 <script src="js/js-i18n.js"></script>    <!-- Traduções -->
 <script src="js/mapa.js"></script>       <!-- Lógica do mapa -->
