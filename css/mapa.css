@@ -403,13 +403,26 @@
   cursor: pointer;
 }
 
-#filtro-wrapper .multi-select-options .multi-select-option {
+#multi-select-categoria,
+#multi-select-categoria *,
+#multi-select-categoria label,
+#multi-select-categoria div,
+#multi-select-categoria span,
+.multi-select-options,
+.multi-select-options *,
+.multi-select-option,
+.multi-select-option * {
   color: #333333 !important;
 }
 
-#filtro-wrapper .multi-select-options .multi-select-option:hover {
+/* Garante fundo branco em tudo */
+.multi-select-options,
+.multi-select-option {
+  background-color: #ffffff !important;
+}
+
+.multi-select-option:hover {
   background-color: #f0f0f0 !important;
-  color: #333333 !important;
 }
 
 @media (max-width: 700px) {
