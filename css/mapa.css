@@ -347,6 +347,61 @@
 #mapa .leaflet-popup-content::-webkit-scrollbar-thumb {
     border-radius: 6px;
 }
+.multi-select-trigger {
+  color: #333 !important; /* Força a cor escura no botão */
+}
+
+.multi-select-options {
+  background: white !important;
+  color: #333 !important;
+}
+
+.multi-select-option {
+  color: #333 !important; /* Força a cor escura nos itens */
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.multi-select-option:hover {
+  background: #f0f0f0;
+}
+
+.multi-select-option input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.multi-select-trigger {
+  color: #333 !important; /* Força a cor escura no botão */
+}
+
+.multi-select-options {
+  background: white !important;
+  color: #333 !important;
+}
+
+.multi-select-option {
+  color: #333 !important; /* Força a cor escura nos itens */
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.multi-select-option:hover {
+  background: #f0f0f0;
+}
+
+.multi-select-option input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
 
 @media (max-width: 700px) {
     #mapa .leaflet-popup-content-wrapper {
