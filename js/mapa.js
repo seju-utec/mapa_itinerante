@@ -1,12 +1,9 @@
 // ===== FUNÇÕES DO MAPA =====
 
-// 1. Define a política de referência ANTES de criar o mapa (evita bloqueio do OSM)
 L.TileLayer.prototype.options.referrerPolicy = 'strict-origin-when-cross-origin';
 
-// 2. Cria o mapa
 const map = L.map('mapa').setView([-24.8, -51.5], 7);
 
-// 3. Adiciona a camada de tiles do OpenStreetMap
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
@@ -19,11 +16,11 @@ map.addLayer(clusterGroup);
 const selectCidade = document.getElementById('filtro-cidade');
 const selectNacionalidade = document.getElementById('filtro-nacionalidade');
 
-// Referências para o novo Multi-Select de Categorias
+// Referências para o Multi-Select de Categorias
 const triggerCategoria = document.getElementById('trigger-categoria');
 const optionsCategoria = document.getElementById('options-categoria');
 const labelCategoria = document.getElementById('label-categoria');
-let categoriasSelecionadas = []; // Array para guardar as categorias marcadas
+let categoriasSelecionadas = []; 
 
 // ===== FUNÇÕES AUXILIARES =====
 function texto(valor) {
@@ -46,7 +43,6 @@ function listaUnica(lista) {
   );
 }
 
-// Função mágica que padroniza os textos (ex: "assistência social" -> "Assistência Social")
 function padronizarTexto(valor) {
   if (!valor) return '';
   let limpo = String(valor).trim().replace(/\s+/g, ' ').toLowerCase();
@@ -55,6 +51,11 @@ function padronizarTexto(valor) {
 
 // ===== PREENCHIMENTO DOS FILTROS =====
 function preencherSelects() {
+  // Limpa os selects antes de preencher (evita duplicatas se a função rodar 2x)
+  selectCidade.innerHTML = '<option value="">— Todos os municípios —</option>';
+  selectNacionalidade.innerHTML = '<option value="">— Todas as nacionalidades —</option>';
+  optionsCategoria.innerHTML = '';
+
   // --- CIDADES ---
   const cidades = listaUnica(localizacoes.map(l => padronizarTexto(l.city)));
   cidades.forEach(cidade => {
@@ -64,7 +65,7 @@ function preencherSelects() {
     selectCidade.appendChild(opt);
   });
 
-  // --- CATEGORIAS (NOVO - Checkboxes) ---
+  // --- CATEGORIAS (Checkboxes) ---
   const categorias = listaUnica(
     localizacoes.flatMap(l => 
       Array.isArray(l.categorias) ? l.categorias.map(c => padronizarTexto(c)) : []
@@ -90,7 +91,7 @@ function preencherSelects() {
     });
 
     label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(categoria));
+    label.appendChild(document.createTextNode(' ' + categoria));
     optionsCategoria.appendChild(label);
   });
 
@@ -110,7 +111,6 @@ function preencherSelects() {
   });
 }
 
-// Função auxiliar para atualizar o texto do botão do dropdown de categorias
 function atualizarLabelCategoria() {
   if (categoriasSelecionadas.length === 0) {
     labelCategoria.textContent = '— Todas as categorias —';
@@ -130,93 +130,55 @@ function adicionarCampo(html, titulo, valor) {
   return html + `<div class="popup-campo"><strong>${escapar(titulo)}:</strong><br>${escapar(valor).replace(/\n/g, '<br>')}</div>`;
 }
 
-// ===== MONTAGEM DO POPUP (Layout de 2 colunas) =====
+// ===== MONTAGEM DO POPUP =====
 function montarPopup(loc) {
   const criarTags = (lista) => {
     if (!Array.isArray(lista) || lista.length === 0) return '-';
     return lista.map(item => `<span class="tag">${escapar(item)}</span>`).join(' ');
   };
 
-  // Coluna da ESQUERDA (Informações principais)
   let colunaEsquerda = `
     <div class="popup-secao">
       <b>Áreas de atuação:</b><br>
       ${criarTags(loc.categorias)}
     </div>
-
     <div class="popup-secao">
       <b>Nacionalidades atendidas:</b><br>
       ${criarTags(loc.nacionalidades_lista)}
     </div>
-
     <div class="popup-secao">
       <b>Público principal:</b><br>
       ${escapar(loc.publico_principal) || '-'}
     </div>
   `;
 
-  // Coluna da DIREITA (Contatos)
   let colunaDireita = ``;
-  
-  if (texto(loc.email)) {
-    colunaDireita += `<div class="popup-contato-item"><b>E-mail:</b><br>${escapar(loc.email)}</div>`;
-  }
-  if (texto(loc.telefone)) {
-    colunaDireita += `<div class="popup-contato-item"><b>Telefone:</b><br>${escapar(loc.telefone)}</div>`;
-  }
-  if (texto(loc.redes_sociais)) {
-    colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${escapar(loc.redes_sociais)}</div>`;
-  }
+  if (texto(loc.email)) colunaDireita += `<div class="popup-contato-item"><b>E-mail:</b><br>${escapar(loc.email)}</div>`;
+  if (texto(loc.telefone)) colunaDireita += `<div class="popup-contato-item"><b>Telefone:</b><br>${escapar(loc.telefone)}</div>`;
+  if (texto(loc.redes_sociais)) colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${escapar(loc.redes_sociais)}</div>`;
   if (texto(loc.site)) {
     const site = texto(loc.site);
     const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
     colunaDireita += `<div class="popup-contato-item"><b>Site:</b><br><a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(site)}</a></div>`;
   }
+  if (colunaDireita === '') colunaDireita = `<div class="popup-contato-item">-</div>`;
 
-  if (colunaDireita === '') {
-    colunaDireita = `<div class="popup-contato-item">-</div>`;
-  }
-
-  // Monta o HTML final do popup
   let html = `
     <div class="popup-organizacao">
-      <div class="popup-titulo">
-        ${escapar(loc.org)}
-      </div>
-      <div class="popup-endereco">
-        <b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}
-      </div>
-
+      <div class="popup-titulo">${escapar(loc.org)}</div>
+      <div class="popup-endereco"><b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}</div>
       <div class="popup-conteudo">
-        <div class="popup-coluna-esquerda">
-          ${colunaEsquerda}
-        </div>
-        <div class="popup-coluna-direita">
-          ${colunaDireita}
-        </div>
+        <div class="popup-coluna-esquerda">${colunaEsquerda}</div>
+        <div class="popup-coluna-direita">${colunaDireita}</div>
       </div>
-
       <div class="popup-grid">
-        <div class="popup-card">
-          <b>Tipo de entidade</b><br>
-          ${escapar(loc.tipo_entidade) || '-'}
-        </div>
-        <div class="popup-card">
-          <b>Forma de acesso</b><br>
-          ${escapar(loc.forma_acesso) || '-'}
-        </div>
-        <div class="popup-card">
-          <b>Horário</b><br>
-          ${escapar(loc.horarios) || '-'}
-        </div>
-        <div class="popup-card">
-          <b>Fundação</b><br>
-          ${escapar(loc.fundacao) || '-'}
-        </div>
+        <div class="popup-card"><b>Tipo de entidade</b><br>${escapar(loc.tipo_entidade) || '-'}</div>
+        <div class="popup-card"><b>Forma de acesso</b><br>${escapar(loc.forma_acesso) || '-'}</div>
+        <div class="popup-card"><b>Horário</b><br>${escapar(loc.horarios) || '-'}</div>
+        <div class="popup-card"><b>Fundação</b><br>${escapar(loc.fundacao) || '-'}</div>
       </div>
   `;
 
-  // Campos extras abaixo do grid
   const camposExtras = [
     { titulo: 'Perfil migratório atendido', valor: loc.perfil_migratorio },
     { titulo: 'Serviços oferecidos', valor: loc.servicos },
@@ -238,7 +200,6 @@ function montarPopup(loc) {
   });
 
   html += `</div>`;
-  
   return html;
 }
 
@@ -250,22 +211,18 @@ function renderizarMarcadores() {
   const filtroNacionalidade = selectNacionalidade.value;
 
   const lista = localizacoes.filter(l => {
-    // Compara cidade padronizada
     if (filtroCidade && padronizarTexto(l.city) !== filtroCidade) return false;
 
-    // Compara categorias (LÓGICA DE MÚLTIPLA SELEÇÃO)
     if (categoriasSelecionadas.length > 0) {
       const catsPadronizadas = Array.isArray(l.categorias) 
         ? l.categorias.map(c => padronizarTexto(c)) 
         : [];
-      // Verifica se o local tem PELO MENOS UMA das categorias selecionadas
       const temAlgumaCategoria = categoriasSelecionadas.some(cat => 
         catsPadronizadas.includes(cat)
       );
       if (!temAlgumaCategoria) return false;
     }
 
-    // Compara nacionalidades padronizadas
     if (filtroNacionalidade) {
       const nacsPadronizadas = Array.isArray(l.nacionalidades_lista) 
         ? l.nacionalidades_lista.map(n => padronizarTexto(n)) 
@@ -304,17 +261,20 @@ renderizarMarcadores();
 selectCidade.addEventListener('change', renderizarMarcadores);
 selectNacionalidade.addEventListener('change', renderizarMarcadores);
 
-// Abre/fecha o dropdown de categorias
-triggerCategoria.addEventListener('click', (e) => {
-  e.stopPropagation();
-  optionsCategoria.classList.toggle('show');
-});
+// Abre/fecha o dropdown de categorias (CORRIGIDO)
+if (triggerCategoria) {
+  triggerCategoria.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    optionsCategoria.classList.toggle('show');
+  });
+}
 
 // Fecha o dropdown se clicar fora
-document.addEventListener('click', (e) => {
+document.addEventListener('click', function(e) {
   const multiSelect = document.getElementById('multi-select-categoria');
   if (multiSelect && !multiSelect.contains(e.target)) {
-    optionsCategoria.classList.remove('show');
+    if (optionsCategoria) optionsCategoria.classList.remove('show');
   }
 });
 
@@ -323,7 +283,6 @@ document.getElementById('btn-limpar').addEventListener('click', () => {
   selectCidade.value = '';
   selectNacionalidade.value = '';
   
-  // Limpa as categorias selecionadas
   categoriasSelecionadas = [];
   document.querySelectorAll('#options-categoria input[type="checkbox"]').forEach(cb => {
     cb.checked = false;
@@ -367,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Ajuste fino do popup para não sair da tela
+// Ajuste fino do popup
 map.on("popupopen", function (e) {
     const popup = e.popup;
     popup.options.autoPan = false;
@@ -375,7 +334,6 @@ map.on("popupopen", function (e) {
     requestAnimationFrame(() => {
         const popupElement = popup.getElement();
         const mapElement = map.getContainer();
-
         if (!popupElement || !mapElement) return;
 
         const mapRect = mapElement.getBoundingClientRect();
@@ -383,21 +341,12 @@ map.on("popupopen", function (e) {
 
         let left = popupElement.offsetLeft;
         let top = popupElement.offsetTop;
-
         const margem = 10;
 
-        if (popupRect.left < mapRect.left + margem) {
-            left += (mapRect.left + margem) - popupRect.left;
-        }
-        if (popupRect.right > mapRect.right - margem) {
-            left -= popupRect.right - (mapRect.right - margem);
-        }
-        if (popupRect.top < mapRect.top + margem) {
-            top += (mapRect.top + margem) - popupRect.top;
-        }
-        if (popupRect.bottom > mapRect.bottom - margem) {
-            top -= popupRect.bottom - (mapRect.bottom - margem);
-        }
+        if (popupRect.left < mapRect.left + margem) left += (mapRect.left + margem) - popupRect.left;
+        if (popupRect.right > mapRect.right - margem) left -= popupRect.right - (mapRect.right - margem);
+        if (popupRect.top < mapRect.top + margem) top += (mapRect.top + margem) - popupRect.top;
+        if (popupRect.bottom > mapRect.bottom - margem) top -= popupRect.bottom - (mapRect.bottom - margem);
 
         popupElement.style.left = `${left}px`;
         popupElement.style.top = `${top}px`;
