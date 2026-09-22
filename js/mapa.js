@@ -80,48 +80,117 @@ function adicionarCampo(html, titulo, valor) {
 }
 
 function montarPopup(loc) {
-  let html = `
-    <div class="popup-osc">
-      <h3>${escapar(loc.org)}</h3>
-      <p><strong>${escapar(loc.city)}</strong>${loc.endereco ? ' — ' + escapar(loc.endereco) : ''}</p>
+  // Função auxiliar para criar as tags
+  const criarTags = (lista) => {
+    if (!Array.isArray(lista) || lista.length === 0) return '-';
+    return lista.map(item => `<span class="tag">${escapar(item)}</span>`).join(' ');
+  };
+
+  // Monta a coluna da ESQUERDA (Informações principais)
+  let colunaEsquerda = `
+    <div class="popup-secao">
+      <b>Áreas de atuação:</b><br>
+      ${criarTags(loc.categorias)}
+    </div>
+
+    <div class="popup-secao">
+      <b>Nacionalidades atendidas:</b><br>
+      ${criarTags(loc.nacionalidades_lista)}
+    </div>
+
+    <div class="popup-secao">
+      <b>Público principal:</b><br>
+      ${escapar(loc.publico_principal) || '-'}
+    </div>
   `;
 
-  if (loc.categorias?.length) {
-    html += `<p><strong>Áreas de atuação:</strong><br>${loc.categorias.map(c => `<span class="tag">${escapar(c)}</span>`).join(' ')}</p>`;
+  // Monta a coluna da DIREITA (Contatos)
+  let colunaDireita = ``;
+  
+  if (texto(loc.email)) {
+    colunaDireita += `<div class="popup-contato-item"><b>E-mail:</b><br>${escapar(loc.email)}</div>`;
   }
-
-  if (loc.nacionalidades_lista?.length) {
-    html += `<p><strong>Nacionalidades atendidas:</strong><br>${loc.nacionalidades_lista.map(n => `<span class="tag tag-nac">${escapar(n)}</span>`).join(' ')}</p>`;
+  if (texto(loc.telefone)) {
+    colunaDireita += `<div class="popup-contato-item"><b>Telefone:</b><br>${escapar(loc.telefone)}</div>`;
   }
-
-  html = adicionarCampo(html, 'Tipo de entidade', loc.tipo_entidade);
-  html = adicionarCampo(html, 'Perfil migratório atendido', loc.perfil_migratorio);
-  html = adicionarCampo(html, 'Serviços oferecidos', loc.servicos);
-  html = adicionarCampo(html, 'Forma de acesso aos serviços', loc.forma_acesso);
-  html = adicionarCampo(html, 'Horários de atendimento', loc.horarios);
-  html = adicionarCampo(html, 'Público principal', loc.publico_principal);
-  html = adicionarCampo(html, 'Segundo público', loc.segundo_publico);
-  html = adicionarCampo(html, 'Outros públicos', loc.outros_publicos);
-  html = adicionarCampo(html, 'Principais atividades', loc.atividades);
-  html = adicionarCampo(html, 'Problema que busca resolver', loc.problema);
-  html = adicionarCampo(html, 'Como resolve', loc.como_resolve);
-  html = adicionarCampo(html, 'Responsável pelo cadastro', loc.responsavel);
-  html = adicionarCampo(html, 'CNPJ', loc.cnpj);
-  html = adicionarCampo(html, 'Data de fundação', loc.fundacao);
-  html = adicionarCampo(html, 'Tempo de atuação', loc.tempo_atuacao);
-  html = adicionarCampo(html, 'E-mail institucional', loc.email);
-  html = adicionarCampo(html, 'Telefone institucional', loc.telefone);
-  html = adicionarCampo(html, 'Possui mais de uma sede?', loc.mais_de_uma_sede);
-
-  if (loc.site) {
+  if (texto(loc.redes_sociais)) {
+    colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${escapar(loc.redes_sociais)}</div>`;
+  }
+  if (texto(loc.site)) {
     const site = texto(loc.site);
     const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
-    html += `<div class="popup-campo"><strong>Site:</strong><br><a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(site)}</a></div>`;
+    colunaDireita += `<div class="popup-contato-item"><b>Site:</b><br><a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(site)}</a></div>`;
   }
 
-  html = adicionarCampo(html, 'Redes sociais', loc.redes_sociais);
+  // Se não houver nenhum contato, mostra um traço
+  if (colunaDireita === '') {
+    colunaDireita = `<div class="popup-contato-item">-</div>`;
+  }
+
+  // Monta o HTML final
+  let html = `
+    <div class="popup-organizacao">
+      <div class="popup-titulo">
+        ${escapar(loc.org)}
+      </div>
+      <div class="popup-endereco">
+        <b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}
+      </div>
+
+      <!-- AQUI É A MÁGICA DAS DUAS COLUNAS -->
+      <div class="popup-conteudo">
+        <div class="popup-coluna-esquerda">
+          ${colunaEsquerda}
+        </div>
+        <div class="popup-coluna-direita">
+          ${colunaDireita}
+        </div>
+      </div>
+
+      <!-- O RESTANTE (Grid, Campos extras, etc.) FICA ABAIXO DAS COLUNAS -->
+      <div class="popup-grid">
+        <div class="popup-card">
+          <b>Tipo de entidade</b><br>
+          ${escapar(loc.tipo_entidade) || '-'}
+        </div>
+        <div class="popup-card">
+          <b>Forma de acesso</b><br>
+          ${escapar(loc.forma_acesso) || '-'}
+        </div>
+        <div class="popup-card">
+          <b>Horário</b><br>
+          ${escapar(loc.horarios) || '-'}
+        </div>
+        <div class="popup-card">
+          <b>Fundação</b><br>
+          ${escapar(loc.fundacao) || '-'}
+        </div>
+      </div>
+  `;
+
+  // Adiciona os outros campos extras que você tinha no código original
+  const camposExtras = [
+    { titulo: 'Perfil migratório atendido', valor: loc.perfil_migratorio },
+    { titulo: 'Serviços oferecidos', valor: loc.servicos },
+    { titulo: 'Segundo público', valor: loc.segundo_publico },
+    { titulo: 'Outros públicos', valor: loc.outros_publicos },
+    { titulo: 'Principais atividades', valor: loc.atividades },
+    { titulo: 'Problema que busca resolver', valor: loc.problema },
+    { titulo: 'Como resolve', valor: loc.como_resolve },
+    { titulo: 'Responsável pelo cadastro', valor: loc.responsavel },
+    { titulo: 'CNPJ', valor: loc.cnpj },
+    { titulo: 'Tempo de atuação', valor: loc.tempo_atuacao },
+    { titulo: 'Possui mais de uma sede?', valor: loc.mais_de_uma_sede }
+  ];
+
+  camposExtras.forEach(campo => {
+    if (texto(campo.valor)) {
+      html += `<div class="popup-campo"><strong>${escapar(campo.titulo)}:</strong><br>${escapar(campo.valor).replace(/\n/g, '<br>')}</div>`;
+    }
+  });
 
   html += `</div>`;
+  
   return html;
 }
 
@@ -154,7 +223,12 @@ function renderizarMarcadores() {
 
     const marker = L.marker([loc.lat, loc.lng]);
     marker.bindPopup(montarPopup(loc), {
-      maxWidth: 420
+      // No computador, o popup pode ser largo e o mapa não é reposicionado
+      // automaticamente quando as informações são abertas.
+      maxWidth: 680,
+      minWidth: 520,
+      autoPan: false,
+      className: 'popup-instituicao'
     });
     clusterGroup.addLayer(marker);
   });
@@ -212,6 +286,52 @@ document.addEventListener('DOMContentLoaded', function() {
       applyTranslations(savedLang);
     }
   }
+});
+
+
+map.on("popupopen", function (e) {
+    const popup = e.popup;
+
+    // Impede o Leaflet de mover o mapa
+    popup.options.autoPan = false;
+
+    requestAnimationFrame(() => {
+        const popupElement = popup.getElement();
+        const mapElement = map.getContainer();
+
+        if (!popupElement || !mapElement) return;
+
+        const mapRect = mapElement.getBoundingClientRect();
+        const popupRect = popupElement.getBoundingClientRect();
+
+        let left = popupElement.offsetLeft;
+        let top = popupElement.offsetTop;
+
+        const margem = 10;
+
+        // Limite esquerdo
+        if (popupRect.left < mapRect.left + margem) {
+            left += (mapRect.left + margem) - popupRect.left;
+        }
+
+        // Limite direito
+        if (popupRect.right > mapRect.right - margem) {
+            left -= popupRect.right - (mapRect.right - margem);
+        }
+
+        // Limite superior
+        if (popupRect.top < mapRect.top + margem) {
+            top += (mapRect.top + margem) - popupRect.top;
+        }
+
+        // Limite inferior
+        if (popupRect.bottom > mapRect.bottom - margem) {
+            top -= popupRect.bottom - (mapRect.bottom - margem);
+        }
+
+        popupElement.style.left = `${left}px`;
+        popupElement.style.top = `${top}px`;
+    });
 });
 
 console.log('🌍 Mapa OSC carregado com os dados de instituições.ods');
