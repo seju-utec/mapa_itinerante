@@ -1,11 +1,14 @@
 // ===== FUNÇÕES DO MAPA =====
 
+L.TileLayer.prototype.options.referrerPolicy = 'strict-origin-when-cross-origin';
+
+// 2. Cria o mapa
 const map = L.map('mapa').setView([-24.8, -51.5], 7);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 18
+// 3. Adiciona a camada de tiles do OpenStreetMap
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
 }).addTo(map);
 
 let clusterGroup = L.markerClusterGroup();
