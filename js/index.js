@@ -1,3 +1,7 @@
+// Dados das instituições cadastradas na planilha instituições.ods
+// Conteúdo gerado a partir da planilha mais recente (colunas do formulário de cadastro).
+// lat/lng representam a localização (centróide) do município informado no endereço da sede.
+
 const localizacoes = [
   {
     "city": "Curitiba",
@@ -17,7 +21,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "De segunda feira a sexta-feira das 9:00 as 17:00",
     "categorias": [
-      "Migração E Refúgio"
+      "Migração e Refúgio"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -41,7 +45,7 @@ const localizacoes = [
     "forma_acesso": "Agendamento",
     "horarios": "Segunda-feira a Sexta-feira, das 08h às 12h e das 13h30 às 17h",
     "categorias": [
-      "Migração E Refúgio"
+      "Migração e Refúgio"
     ],
     "nacionalidades_lista": [
       "Qualquer Nacionalidade"
@@ -65,7 +69,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "De segunda ao domingo das 9hs até 21hs.",
     "categorias": [
-      "Migração E Refúgio"
+      "Migração e Refúgio"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -113,7 +117,7 @@ const localizacoes = [
     "forma_acesso": "Agendamento",
     "horarios": "Segunda a sexta-feira",
     "categorias": [
-      "Encaminhamento A Organizações E Setores De Assistência A Migrantes"
+      "Migração e Refúgio"
     ],
     "nacionalidades_lista": [
       "Haitianos",
@@ -139,7 +143,7 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "Segunda a Sábado 08:00 às 18:00, Domingo das 09h a 13h",
     "categorias": [
-      "Desenvolvimento De Projetos Sociais"
+      "Desenvolvimento de Projetos Sociais"
     ],
     "nacionalidades_lista": [
       "Brasileiros",
@@ -242,10 +246,10 @@ const localizacoes = [
     "forma_acesso": "Presencial",
     "horarios": "Sábados 14h a 18h",
     "categorias": [
-      "Migração E Refúgio",
+      "Migração e Refúgio",
       "Assistência Social",
       "Direitos Humanos",
-      "Educação E Empreendedorismo"
+      "Educação e Empreendedorismo"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -269,7 +273,7 @@ const localizacoes = [
     "forma_acesso": "Atendimento Remoto",
     "horarios": "Segunda a Sexta 8:00 às 18:00",
     "categorias": [
-      "Migração E Refúgio"
+      "Migração e Refúgio"
     ],
     "nacionalidades_lista": [
       "Árabes"
@@ -370,7 +374,7 @@ const localizacoes = [
     "forma_acesso": "Atendimento Remoto",
     "horarios": "Sábados, 10h",
     "categorias": [
-      "Educação E Esportes"
+      "Educação e Esportes"
     ],
     "nacionalidades_lista": [
       "Venezuelanos"
@@ -394,10 +398,10 @@ const localizacoes = [
     "forma_acesso": "Presencial | Atendimento Remoto",
     "horarios": "Segunda a Quinta 8:00 às 18:00",
     "categorias": [
-      "Migração E Refúgio",
+      "Migração e Refúgio",
       "Assistência Social",
       "Direitos Humanos",
-      "Educação E Empreendedorismo"
+      "Educação e Empreendedorismo"
     ],
     "nacionalidades_lista": [
       "Qualquer Nacionalidade"
