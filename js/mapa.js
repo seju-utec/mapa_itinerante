@@ -1,3 +1,6 @@
+// ===== FUNÇÕES DO MAPA =====
+
+// 1. Define a política de referência ANTES de criar o mapa (evita bloqueio do OSM)
 L.TileLayer.prototype.options.referrerPolicy = 'strict-origin-when-cross-origin';
 
 // 2. Cria o mapa
@@ -9,14 +12,20 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-
 let clusterGroup = L.markerClusterGroup();
 map.addLayer(clusterGroup);
 
+// ===== REFERÊNCIAS AOS ELEMENTOS DO DOM =====
 const selectCidade = document.getElementById('filtro-cidade');
-const selectCategoria = document.getElementById('filtro-categoria');
 const selectNacionalidade = document.getElementById('filtro-nacionalidade');
 
+// Referências para o novo Multi-Select de Categorias
+const triggerCategoria = document.getElementById('trigger-categoria');
+const optionsCategoria = document.getElementById('options-categoria');
+const labelCategoria = document.getElementById('label-categoria');
+let categoriasSelecionadas = []; // Array para guardar as categorias marcadas
+
+// ===== FUNÇÕES AUXILIARES =====
 function texto(valor) {
   if (valor === null || valor === undefined) return '';
   return String(valor).trim();
@@ -37,9 +46,17 @@ function listaUnica(lista) {
   );
 }
 
-function preencherSelects() {
-  const cidades = listaUnica(localizacoes.map(l => l.city));
+// Função mágica que padroniza os textos (ex: "assistência social" -> "Assistência Social")
+function padronizarTexto(valor) {
+  if (!valor) return '';
+  let limpo = String(valor).trim().replace(/\s+/g, ' ').toLowerCase();
+  return limpo.replace(/(^|\s)\S/g, function(letra) { return letra.toUpperCase(); });
+}
 
+// ===== PREENCHIMENTO DOS FILTROS =====
+function preencherSelects() {
+  // --- CIDADES ---
+  const cidades = listaUnica(localizacoes.map(l => padronizarTexto(l.city)));
   cidades.forEach(cidade => {
     const opt = document.createElement('option');
     opt.value = cidade;
@@ -47,29 +64,61 @@ function preencherSelects() {
     selectCidade.appendChild(opt);
   });
 
+  // --- CATEGORIAS (NOVO - Checkboxes) ---
   const categorias = listaUnica(
-    localizacoes.flatMap(l => Array.isArray(l.categorias) ? l.categorias : [])
-  );
-
-  categorias.forEach(categoria => {
-    const opt = document.createElement('option');
-    opt.value = categoria;
-    opt.textContent = categoria;
-    selectCategoria.appendChild(opt);
-  });
-
-  const nacionalidades = listaUnica(
-    localizacoes.flatMap(l =>
-      Array.isArray(l.nacionalidades_lista) ? l.nacionalidades_lista : []
+    localizacoes.flatMap(l => 
+      Array.isArray(l.categorias) ? l.categorias.map(c => padronizarTexto(c)) : []
     )
   );
 
+  categorias.forEach(categoria => {
+    const label = document.createElement('label');
+    label.className = 'multi-select-option';
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = categoria;
+    
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        categoriasSelecionadas.push(this.value);
+      } else {
+        categoriasSelecionadas = categoriasSelecionadas.filter(c => c !== this.value);
+      }
+      atualizarLabelCategoria();
+      renderizarMarcadores();
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(categoria));
+    optionsCategoria.appendChild(label);
+  });
+
+  // --- NACIONALIDADES ---
+  const nacionalidades = listaUnica(
+    localizacoes.flatMap(l =>
+      Array.isArray(l.nacionalidades_lista) 
+        ? l.nacionalidades_lista.map(n => padronizarTexto(n)) 
+        : []
+    )
+  );
   nacionalidades.forEach(nacionalidade => {
     const opt = document.createElement('option');
     opt.value = nacionalidade;
     opt.textContent = nacionalidade;
     selectNacionalidade.appendChild(opt);
   });
+}
+
+// Função auxiliar para atualizar o texto do botão do dropdown de categorias
+function atualizarLabelCategoria() {
+  if (categoriasSelecionadas.length === 0) {
+    labelCategoria.textContent = '— Todas as categorias —';
+  } else if (categoriasSelecionadas.length === 1) {
+    labelCategoria.textContent = categoriasSelecionadas[0];
+  } else {
+    labelCategoria.textContent = `${categoriasSelecionadas.length} categorias selecionadas`;
+  }
 }
 
 function atualizarContador(n) {
@@ -81,14 +130,14 @@ function adicionarCampo(html, titulo, valor) {
   return html + `<div class="popup-campo"><strong>${escapar(titulo)}:</strong><br>${escapar(valor).replace(/\n/g, '<br>')}</div>`;
 }
 
+// ===== MONTAGEM DO POPUP (Layout de 2 colunas) =====
 function montarPopup(loc) {
-  // Função auxiliar para criar as tags
   const criarTags = (lista) => {
     if (!Array.isArray(lista) || lista.length === 0) return '-';
     return lista.map(item => `<span class="tag">${escapar(item)}</span>`).join(' ');
   };
 
-  // Monta a coluna da ESQUERDA (Informações principais)
+  // Coluna da ESQUERDA (Informações principais)
   let colunaEsquerda = `
     <div class="popup-secao">
       <b>Áreas de atuação:</b><br>
@@ -106,7 +155,7 @@ function montarPopup(loc) {
     </div>
   `;
 
-  // Monta a coluna da DIREITA (Contatos)
+  // Coluna da DIREITA (Contatos)
   let colunaDireita = ``;
   
   if (texto(loc.email)) {
@@ -124,12 +173,11 @@ function montarPopup(loc) {
     colunaDireita += `<div class="popup-contato-item"><b>Site:</b><br><a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(site)}</a></div>`;
   }
 
-  // Se não houver nenhum contato, mostra um traço
   if (colunaDireita === '') {
     colunaDireita = `<div class="popup-contato-item">-</div>`;
   }
 
-  // Monta o HTML final
+  // Monta o HTML final do popup
   let html = `
     <div class="popup-organizacao">
       <div class="popup-titulo">
@@ -139,7 +187,6 @@ function montarPopup(loc) {
         <b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}
       </div>
 
-      <!-- AQUI É A MÁGICA DAS DUAS COLUNAS -->
       <div class="popup-conteudo">
         <div class="popup-coluna-esquerda">
           ${colunaEsquerda}
@@ -149,7 +196,6 @@ function montarPopup(loc) {
         </div>
       </div>
 
-      <!-- O RESTANTE (Grid, Campos extras, etc.) FICA ABAIXO DAS COLUNAS -->
       <div class="popup-grid">
         <div class="popup-card">
           <b>Tipo de entidade</b><br>
@@ -170,7 +216,7 @@ function montarPopup(loc) {
       </div>
   `;
 
-  // Adiciona os outros campos extras que você tinha no código original
+  // Campos extras abaixo do grid
   const camposExtras = [
     { titulo: 'Perfil migratório atendido', valor: loc.perfil_migratorio },
     { titulo: 'Serviços oferecidos', valor: loc.servicos },
@@ -196,26 +242,36 @@ function montarPopup(loc) {
   return html;
 }
 
+// ===== RENDERIZAÇÃO DOS MARCADORES =====
 function renderizarMarcadores() {
   clusterGroup.clearLayers();
 
   const filtroCidade = selectCidade.value;
-  const filtroCategoria = selectCategoria.value;
   const filtroNacionalidade = selectNacionalidade.value;
 
   const lista = localizacoes.filter(l => {
-    if (filtroCidade && l.city !== filtroCidade) return false;
+    // Compara cidade padronizada
+    if (filtroCidade && padronizarTexto(l.city) !== filtroCidade) return false;
 
-    if (
-      filtroCategoria &&
-      (!Array.isArray(l.categorias) || !l.categorias.includes(filtroCategoria))
-    ) return false;
+    // Compara categorias (LÓGICA DE MÚLTIPLA SELEÇÃO)
+    if (categoriasSelecionadas.length > 0) {
+      const catsPadronizadas = Array.isArray(l.categorias) 
+        ? l.categorias.map(c => padronizarTexto(c)) 
+        : [];
+      // Verifica se o local tem PELO MENOS UMA das categorias selecionadas
+      const temAlgumaCategoria = categoriasSelecionadas.some(cat => 
+        catsPadronizadas.includes(cat)
+      );
+      if (!temAlgumaCategoria) return false;
+    }
 
-    if (
-      filtroNacionalidade &&
-      (!Array.isArray(l.nacionalidades_lista) ||
-       !l.nacionalidades_lista.includes(filtroNacionalidade))
-    ) return false;
+    // Compara nacionalidades padronizadas
+    if (filtroNacionalidade) {
+      const nacsPadronizadas = Array.isArray(l.nacionalidades_lista) 
+        ? l.nacionalidades_lista.map(n => padronizarTexto(n)) 
+        : [];
+      if (!nacsPadronizadas.includes(filtroNacionalidade)) return false;
+    }
 
     return true;
   });
@@ -225,8 +281,6 @@ function renderizarMarcadores() {
 
     const marker = L.marker([loc.lat, loc.lng]);
     marker.bindPopup(montarPopup(loc), {
-      // No computador, o popup pode ser largo e o mapa não é reposicionado
-      // automaticamente quando as informações são abertas.
       maxWidth: 680,
       minWidth: 520,
       autoPan: false,
@@ -243,29 +297,52 @@ function renderizarMarcadores() {
   }
 }
 
+// ===== INICIALIZAÇÃO E EVENTOS =====
 preencherSelects();
 renderizarMarcadores();
 
 selectCidade.addEventListener('change', renderizarMarcadores);
-selectCategoria.addEventListener('change', renderizarMarcadores);
 selectNacionalidade.addEventListener('change', renderizarMarcadores);
 
+// Abre/fecha o dropdown de categorias
+triggerCategoria.addEventListener('click', (e) => {
+  e.stopPropagation();
+  optionsCategoria.classList.toggle('show');
+});
+
+// Fecha o dropdown se clicar fora
+document.addEventListener('click', (e) => {
+  const multiSelect = document.getElementById('multi-select-categoria');
+  if (multiSelect && !multiSelect.contains(e.target)) {
+    optionsCategoria.classList.remove('show');
+  }
+});
+
+// Botão Limpar Filtros
 document.getElementById('btn-limpar').addEventListener('click', () => {
   selectCidade.value = '';
-  selectCategoria.value = '';
   selectNacionalidade.value = '';
+  
+  // Limpa as categorias selecionadas
+  categoriasSelecionadas = [];
+  document.querySelectorAll('#options-categoria input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
+  atualizarLabelCategoria();
+  
   renderizarMarcadores();
 });
 
+// Fecha o dropdown de idiomas ao clicar fora
 document.addEventListener('click', function(event) {
   const selector = document.getElementById('language-selector');
-
   if (selector && !selector.contains(event.target)) {
     const dropdown = document.getElementById('language-dropdown');
     if (dropdown) dropdown.classList.remove('show');
   }
 });
 
+// Carrega idioma salvo
 document.addEventListener('DOMContentLoaded', function() {
   const savedLang = localStorage.getItem('preferred-language');
 
@@ -290,11 +367,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-
+// Ajuste fino do popup para não sair da tela
 map.on("popupopen", function (e) {
     const popup = e.popup;
-
-    // Impede o Leaflet de mover o mapa
     popup.options.autoPan = false;
 
     requestAnimationFrame(() => {
@@ -311,22 +386,15 @@ map.on("popupopen", function (e) {
 
         const margem = 10;
 
-        // Limite esquerdo
         if (popupRect.left < mapRect.left + margem) {
             left += (mapRect.left + margem) - popupRect.left;
         }
-
-        // Limite direito
         if (popupRect.right > mapRect.right - margem) {
             left -= popupRect.right - (mapRect.right - margem);
         }
-
-        // Limite superior
         if (popupRect.top < mapRect.top + margem) {
             top += (mapRect.top + margem) - popupRect.top;
         }
-
-        // Limite inferior
         if (popupRect.bottom > mapRect.bottom - margem) {
             top -= popupRect.bottom - (mapRect.bottom - margem);
         }
