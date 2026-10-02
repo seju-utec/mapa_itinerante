@@ -111,6 +111,7 @@
   overflow-wrap: break-word;
   word-break: normal;
   line-height: 1.4;
+  overscroll-behavior: contain;
 }
 .popup-instituicao .leaflet-popup-scrolled {
   overflow-y: auto;
