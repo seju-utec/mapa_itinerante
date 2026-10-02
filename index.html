@@ -96,10 +96,15 @@
     </div>
   
     <div class="filtro-campo">
-    <label for="filtro-nacionalidade" data-i18n="filter-nationality">Nacionalidade atendida:</label>
-    <select id="filtro-nacionalidade">
-      <option value="" data-i18n="filter-all-nationality">— Todas as nacionalidades —</option>
-    </select>
+    <label for="trigger-nacionalidade" data-i18n="filter-nationality">Nacionalidade atendida:</label>
+    <div class="multi-select" id="multi-select-nacionalidade">
+      <button type="button" class="multi-select-trigger" id="trigger-nacionalidade" aria-expanded="false" aria-controls="options-nacionalidade">
+        <span id="label-nacionalidade">— Todas as nacionalidades —</span>
+        <span class="arrow-down"><i class="fas fa-chevron-down"></i></span>
+      </button>
+      <div class="multi-select-options" id="options-nacionalidade">
+      </div>
+    </div>
     </div>
   
     <button id="btn-limpar" data-i18n="filter-clear">Limpar filtros</button>
