@@ -1,6 +1,3 @@
-// Dados das instituições cadastradas na planilha instituições.ods
-// Conteúdo gerado a partir da planilha mais recente (colunas do formulário de cadastro).
-// lat/lng representam a localização (centróide) do município informado no endereço da sede.
 
 const localizacoes = [
   {
@@ -486,5 +483,4 @@ const localizacoes = [
   }
 ];
 
-// Compatibilidade com versões do mapa que usam esses nomes.
 const dadosInstituicoes = localizacoes;
