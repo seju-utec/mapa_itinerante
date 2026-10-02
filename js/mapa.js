@@ -344,35 +344,43 @@ const PINO_MEIO = 20;
 
 function layoutPopup(popup, animar) {
   if (!popup || !map.hasLayer(popup)) return;
+  map.stop();
   const tam = map.getSize();
-  const largura = Math.max(180, Math.min(POPUP_CFG.larguraMax, tam.x - 70));
-  const alturaMax = Math.max(120, tam.y - POPUP_CFG.margem * 2);
+  const largura = Math.max(1, Math.min(POPUP_CFG.larguraMax, tam.x - 70));
+  const alturaMax = Math.max(1, tam.y - POPUP_CFG.margem * 2);
 
-  popup.options.minWidth = largura - POPUP_CFG.margemConteudo;
-  popup.options.maxWidth = largura - POPUP_CFG.margemConteudo;
-  popup.options.maxHeight = alturaMax - 2;
+  popup.options.minWidth = Math.max(1, largura - POPUP_CFG.margemConteudo);
+  popup.options.maxWidth = popup.options.minWidth;
+  popup.options.maxHeight = alturaMax;
   popup.options.offset = L.point(0, 0);
   popup.update();
 
   const el = popup.getElement();
   if (!el) return;
+  const conteudo = el.querySelector('.leaflet-popup-content');
+  if (!conteudo) return;
+  const alturaExterna = el.offsetHeight - conteudo.offsetHeight;
+  popup.options.maxHeight = Math.max(1, alturaMax - alturaExterna);
+  popup.update();
   const largPainel = el.offsetWidth;
-  const altPainel = Math.min(el.offsetHeight, alturaMax);
+  const altPainel = el.offsetHeight;
 
   const conjunto = POPUP_CFG.espaco + largPainel;
   let pinoX = Math.round((tam.x - conjunto) / 2);
   pinoX = Math.max(POPUP_CFG.pinoX, Math.min(pinoX, tam.x - conjunto - POPUP_CFG.margem));
   pinoX = Math.max(POPUP_CFG.pinoX, pinoX);
-  const pinoY = Math.round(tam.y / 2);
+  const pinoY = Math.round(tam.y / 2) + PINO_MEIO;
 
+  const atual = map.latLngToContainerPoint(popup.getLatLng());
+  const mapaRect = map.getContainer().getBoundingClientRect();
+  const popupRect = el.getBoundingClientRect();
   popup.options.offset = L.point(
-    Math.round(largPainel / 2 + POPUP_CFG.espaco),
-    Math.round(altPainel / 2 + PINO_MEIO)
+    Math.round(POPUP_CFG.espaco - (popupRect.left - mapaRect.left - atual.x)),
+    Math.round(-PINO_MEIO - altPainel / 2 - (popupRect.top - mapaRect.top - atual.y))
   );
   popup.update();
 
-  const atual = map.latLngToContainerPoint(popup.getLatLng());
-  const alvo = L.point(pinoX, pinoY - PINO_MEIO);
+  const alvo = L.point(pinoX, pinoY);
   const delta = atual.subtract(alvo);
   if (Math.abs(delta.x) > 1 || Math.abs(delta.y) > 1) {
     map.panBy(delta, { animate: animar !== false, duration: 0.35 });
@@ -381,6 +389,8 @@ function layoutPopup(popup, animar) {
 
 map.on('popupopen', function (e) {
   e.popup.options.autoPan = false;
+  const conteudo = e.popup.getElement().querySelector('.leaflet-popup-content');
+  if (conteudo) conteudo.scrollTop = 0;
   requestAnimationFrame(() => layoutPopup(e.popup, true));
 });
 
