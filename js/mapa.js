@@ -1,4 +1,3 @@
-// ===== FUNÇÕES DO MAPA =====
 
 L.TileLayer.prototype.options.referrerPolicy = 'strict-origin-when-cross-origin';
 
@@ -12,17 +11,14 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let clusterGroup = L.markerClusterGroup();
 map.addLayer(clusterGroup);
 
-// ===== REFERÊNCIAS AOS ELEMENTOS DO DOM =====
 const selectCidade = document.getElementById('filtro-cidade');
 const selectNacionalidade = document.getElementById('filtro-nacionalidade');
 
-// Referências para o Multi-Select de Categorias
 const triggerCategoria = document.getElementById('trigger-categoria');
 const optionsCategoria = document.getElementById('options-categoria');
 const labelCategoria = document.getElementById('label-categoria');
 let categoriasSelecionadas = []; 
 
-// ===== FUNÇÕES AUXILIARES =====
 function texto(valor) {
   if (valor === null || valor === undefined) return '';
   return String(valor).trim();
@@ -49,14 +45,11 @@ function padronizarTexto(valor) {
   return limpo.replace(/(^|\s)\S/g, function(letra) { return letra.toUpperCase(); });
 }
 
-// ===== PREENCHIMENTO DOS FILTROS =====
 function preencherSelects() {
-  // Limpa os selects antes de preencher (evita duplicatas se a função rodar 2x)
   selectCidade.innerHTML = '<option value="">— Todos os municípios —</option>';
   selectNacionalidade.innerHTML = '<option value="">— Todas as nacionalidades —</option>';
   optionsCategoria.innerHTML = '';
 
-  // --- CIDADES ---
   const cidades = listaUnica(localizacoes.map(l => padronizarTexto(l.city)));
   cidades.forEach(cidade => {
     const opt = document.createElement('option');
@@ -65,7 +58,6 @@ function preencherSelects() {
     selectCidade.appendChild(opt);
   });
 
-  // --- CATEGORIAS (Checkboxes) ---
   const categorias = listaUnica(
     localizacoes.flatMap(l => 
       Array.isArray(l.categorias) ? l.categorias.map(c => padronizarTexto(c)) : []
@@ -87,7 +79,7 @@ function preencherSelects() {
         categoriasSelecionadas = categoriasSelecionadas.filter(c => c !== this.value);
       }
       atualizarLabelCategoria();
-      renderizarMarcadores();
+      renderizarMarcadores(false);
     });
 
     label.appendChild(checkbox);
@@ -95,7 +87,6 @@ function preencherSelects() {
     optionsCategoria.appendChild(label);
   });
 
-  // --- NACIONALIDADES ---
   const nacionalidades = listaUnica(
     localizacoes.flatMap(l =>
       Array.isArray(l.nacionalidades_lista) 
@@ -130,7 +121,6 @@ function adicionarCampo(html, titulo, valor) {
   return html + `<div class="popup-campo"><strong>${escapar(titulo)}:</strong><br>${escapar(valor).replace(/\n/g, '<br>')}</div>`;
 }
 
-// ===== MONTAGEM DO POPUP =====
 function montarPopup(loc) {
   const criarTags = (lista) => {
     if (!Array.isArray(lista) || lista.length === 0) return '-';
@@ -156,19 +146,15 @@ function montarPopup(loc) {
   if (texto(loc.email)) colunaDireita += `<div class="popup-contato-item"><b>E-mail:</b><br>${escapar(loc.email)}</div>`;
   if (texto(loc.telefone)) colunaDireita += `<div class="popup-contato-item"><b>Telefone:</b><br>${escapar(loc.telefone)}</div>`;
   if (texto(loc.redes_sociais)) {
-    // Separa as redes sociais por "|" (você tem vários links separados por "|")
     const redes = texto(loc.redes_sociais)
       .split('|')
       .map(r => r.trim())
       .filter(r => r.length > 0);
   
-    // Cria os links clicáveis mantendo o texto completo
     const linksRedes = redes.map(rede => {
-      // Verifica se já tem http/https, senão adiciona
       const href = /^https?:\/\//i.test(rede) ? rede : `https://${rede}`;
-      // Mantém o texto original completo (sem encurtar)
       return `<a href="${escapar(href)}" target="_blank" rel="noopener noreferrer">${escapar(rede)}</a>`;
-    }).join('<br>'); // Uma rede social por linha
+    }).join('<br>');
   
     colunaDireita += `<div class="popup-contato-item"><b>Redes sociais:</b><br>${linksRedes}</div>`;
   }
@@ -219,8 +205,7 @@ function montarPopup(loc) {
   return html;
 }
 
-// ===== RENDERIZAÇÃO DOS MARCADORES =====
-function renderizarMarcadores() {
+function renderizarMarcadores(ajustarVista = false) {
   clusterGroup.clearLayers();
 
   const filtroCidade = selectCidade.value;
@@ -254,47 +239,55 @@ function renderizarMarcadores() {
 
     const marker = L.marker([loc.lat, loc.lng]);
     marker.bindPopup(montarPopup(loc), {
-      maxWidth: 680,
-      minWidth: 520,
+      maxWidth: 600,
+      minWidth: 200,
       autoPan: false,
+      keepInView: false,
+      closeButton: true,
       className: 'popup-instituicao'
     });
     clusterGroup.addLayer(marker);
   });
 
   atualizarContador(lista.length);
+  renderizarListaOrganizacoes(lista);
 
-  if (lista.length > 0) {
-    const bounds = lista.map(l => [l.lat, l.lng]);
+  if (ajustarVista && clusterGroup.getLayers().length > 0) {
+    const bounds = clusterGroup.getLayers().map(marker => marker.getLatLng());
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
   }
 }
 
-// ===== INICIALIZAÇÃO E EVENTOS =====
 preencherSelects();
-renderizarMarcadores();
+renderizarMarcadores(true);
 
-selectCidade.addEventListener('change', renderizarMarcadores);
-selectNacionalidade.addEventListener('change', renderizarMarcadores);
+selectCidade.addEventListener('change', () => renderizarMarcadores(true));
+selectNacionalidade.addEventListener('change', () => renderizarMarcadores(true));
 
-// Abre/fecha o dropdown de categorias (CORRIGIDO)
 if (triggerCategoria) {
   triggerCategoria.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
     optionsCategoria.classList.toggle('show');
+    triggerCategoria.setAttribute('aria-expanded', optionsCategoria.classList.contains('show'));
   });
 }
 
-// Fecha o dropdown se clicar fora
 document.addEventListener('click', function(e) {
   const multiSelect = document.getElementById('multi-select-categoria');
   if (multiSelect && !multiSelect.contains(e.target)) {
     if (optionsCategoria) optionsCategoria.classList.remove('show');
+    if (triggerCategoria) triggerCategoria.setAttribute('aria-expanded', 'false');
   }
 });
 
-// Botão Limpar Filtros
+triggerCategoria.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    optionsCategoria.classList.remove('show');
+    triggerCategoria.setAttribute('aria-expanded', 'false');
+  }
+});
+
 document.getElementById('btn-limpar').addEventListener('click', () => {
   selectCidade.value = '';
   selectNacionalidade.value = '';
@@ -308,7 +301,6 @@ document.getElementById('btn-limpar').addEventListener('click', () => {
   renderizarMarcadores();
 });
 
-// Fecha o dropdown de idiomas ao clicar fora
 document.addEventListener('click', function(event) {
   const selector = document.getElementById('language-selector');
   if (selector && !selector.contains(event.target)) {
@@ -317,7 +309,6 @@ document.addEventListener('click', function(event) {
   }
 });
 
-// Carrega idioma salvo
 document.addEventListener('DOMContentLoaded', function() {
   const savedLang = localStorage.getItem('preferred-language');
 
@@ -342,32 +333,63 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Ajuste fino do popup
-map.on("popupopen", function (e) {
-    const popup = e.popup;
-    popup.options.autoPan = false;
+const POPUP_CFG = {
+  margem: 10,
+  pinoX: 26,
+  espaco: 16,
+  larguraMax: 600,
+  margemConteudo: 34
+};
+const PINO_MEIO = 20;
 
-    requestAnimationFrame(() => {
-        const popupElement = popup.getElement();
-        const mapElement = map.getContainer();
-        if (!popupElement || !mapElement) return;
+function layoutPopup(popup, animar) {
+  if (!popup || !map.hasLayer(popup)) return;
+  const tam = map.getSize();
+  const largura = Math.max(180, Math.min(POPUP_CFG.larguraMax, tam.x - 70));
+  const alturaMax = Math.max(120, tam.y - POPUP_CFG.margem * 2);
 
-        const mapRect = mapElement.getBoundingClientRect();
-        const popupRect = popupElement.getBoundingClientRect();
+  popup.options.minWidth = largura - POPUP_CFG.margemConteudo;
+  popup.options.maxWidth = largura - POPUP_CFG.margemConteudo;
+  popup.options.maxHeight = alturaMax - 2;
+  popup.options.offset = L.point(0, 0);
+  popup.update();
 
-        let left = popupElement.offsetLeft;
-        let top = popupElement.offsetTop;
-        const margem = 10;
+  const el = popup.getElement();
+  if (!el) return;
+  const largPainel = el.offsetWidth;
+  const altPainel = Math.min(el.offsetHeight, alturaMax);
 
-        if (popupRect.left < mapRect.left + margem) left += (mapRect.left + margem) - popupRect.left;
-        if (popupRect.right > mapRect.right - margem) left -= popupRect.right - (mapRect.right - margem);
-        if (popupRect.top < mapRect.top + margem) top += (mapRect.top + margem) - popupRect.top;
-        if (popupRect.bottom > mapRect.bottom - margem) top -= popupRect.bottom - (mapRect.bottom - margem);
+  const conjunto = POPUP_CFG.espaco + largPainel;
+  let pinoX = Math.round((tam.x - conjunto) / 2);
+  pinoX = Math.max(POPUP_CFG.pinoX, Math.min(pinoX, tam.x - conjunto - POPUP_CFG.margem));
+  pinoX = Math.max(POPUP_CFG.pinoX, pinoX);
+  const pinoY = Math.round(tam.y / 2);
 
-        popupElement.style.left = `${left}px`;
-        popupElement.style.top = `${top}px`;
-    });
+  popup.options.offset = L.point(
+    Math.round(largPainel / 2 + POPUP_CFG.espaco),
+    Math.round(altPainel / 2 + PINO_MEIO)
+  );
+  popup.update();
+
+  const atual = map.latLngToContainerPoint(popup.getLatLng());
+  const alvo = L.point(pinoX, pinoY - PINO_MEIO);
+  const delta = atual.subtract(alvo);
+  if (Math.abs(delta.x) > 1 || Math.abs(delta.y) > 1) {
+    map.panBy(delta, { animate: animar !== false, duration: 0.35 });
+  }
+}
+
+map.on('popupopen', function (e) {
+  e.popup.options.autoPan = false;
+  requestAnimationFrame(() => layoutPopup(e.popup, true));
 });
 
-console.log('🌍 Mapa OSC carregado com os dados de instituições.ods');
-console.log('📚 Instituições carregadas:', localizacoes.length);
+let resizeTimer = null;
+map.on('resize', function () {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    map.eachLayer(l => { if (l instanceof L.Popup && map.hasLayer(l)) layoutPopup(l, false); });
+  }, 120);
+});
+window.addEventListener('resize', () => map.invalidateSize());
+
