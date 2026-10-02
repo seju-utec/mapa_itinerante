@@ -74,6 +74,7 @@
 
 #filtro-wrapper select:focus-visible,
 #trigger-categoria:focus-visible,
+#trigger-nacionalidade:focus-visible,
 #btn-limpar:focus-visible {
   outline: 2px solid #cce8d6;
   outline-offset: 3px;
@@ -343,6 +344,12 @@
   white-space: nowrap;
 }
 
+#label-nacionalidade {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .multi-select-trigger .arrow-down {
   margin-left: 10px;
   font-size: 0.7rem;
@@ -474,9 +481,8 @@
 
 #multi-select-categoria,
 #multi-select-categoria *,
-#multi-select-categoria label,
-#multi-select-categoria div,
-#multi-select-categoria span,
+#multi-select-nacionalidade,
+#multi-select-nacionalidade *,
 .multi-select-options,
 .multi-select-options *,
 .multi-select-option,
