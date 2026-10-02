@@ -12,12 +12,15 @@ let clusterGroup = L.markerClusterGroup();
 map.addLayer(clusterGroup);
 
 const selectCidade = document.getElementById('filtro-cidade');
-const selectNacionalidade = document.getElementById('filtro-nacionalidade');
 
 const triggerCategoria = document.getElementById('trigger-categoria');
 const optionsCategoria = document.getElementById('options-categoria');
 const labelCategoria = document.getElementById('label-categoria');
-let categoriasSelecionadas = []; 
+const triggerNacionalidade = document.getElementById('trigger-nacionalidade');
+const optionsNacionalidade = document.getElementById('options-nacionalidade');
+const labelNacionalidade = document.getElementById('label-nacionalidade');
+let categoriasSelecionadas = [];
+let nacionalidadesSelecionadas = [];
 
 function texto(valor) {
   if (valor === null || valor === undefined) return '';
@@ -47,8 +50,8 @@ function padronizarTexto(valor) {
 
 function preencherSelects() {
   selectCidade.innerHTML = '<option value="">— Todos os municípios —</option>';
-  selectNacionalidade.innerHTML = '<option value="">— Todas as nacionalidades —</option>';
   optionsCategoria.innerHTML = '';
+  optionsNacionalidade.innerHTML = '';
 
   const cidades = listaUnica(localizacoes.map(l => padronizarTexto(l.city)));
   cidades.forEach(cidade => {
@@ -95,10 +98,26 @@ function preencherSelects() {
     )
   );
   nacionalidades.forEach(nacionalidade => {
-    const opt = document.createElement('option');
-    opt.value = nacionalidade;
-    opt.textContent = nacionalidade;
-    selectNacionalidade.appendChild(opt);
+    const label = document.createElement('label');
+    label.className = 'multi-select-option';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = nacionalidade;
+
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        nacionalidadesSelecionadas.push(this.value);
+      } else {
+        nacionalidadesSelecionadas = nacionalidadesSelecionadas.filter(n => n !== this.value);
+      }
+      atualizarLabelNacionalidade();
+      renderizarMarcadores(false);
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(' ' + nacionalidade));
+    optionsNacionalidade.appendChild(label);
   });
 }
 
@@ -109,6 +128,16 @@ function atualizarLabelCategoria() {
     labelCategoria.textContent = categoriasSelecionadas[0];
   } else {
     labelCategoria.textContent = `${categoriasSelecionadas.length} categorias selecionadas`;
+  }
+}
+
+function atualizarLabelNacionalidade() {
+  if (nacionalidadesSelecionadas.length === 0) {
+    labelNacionalidade.textContent = '— Todas as nacionalidades —';
+  } else if (nacionalidadesSelecionadas.length === 1) {
+    labelNacionalidade.textContent = nacionalidadesSelecionadas[0];
+  } else {
+    labelNacionalidade.textContent = `${nacionalidadesSelecionadas.length} nacionalidades selecionadas`;
   }
 }
 
@@ -209,8 +238,6 @@ function renderizarMarcadores(ajustarVista = false) {
   clusterGroup.clearLayers();
 
   const filtroCidade = selectCidade.value;
-  const filtroNacionalidade = selectNacionalidade.value;
-
   const lista = localizacoes.filter(l => {
     if (filtroCidade && padronizarTexto(l.city) !== filtroCidade) return false;
 
@@ -224,11 +251,11 @@ function renderizarMarcadores(ajustarVista = false) {
       if (!temAlgumaCategoria) return false;
     }
 
-    if (filtroNacionalidade) {
+    if (nacionalidadesSelecionadas.length > 0) {
       const nacsPadronizadas = Array.isArray(l.nacionalidades_lista) 
         ? l.nacionalidades_lista.map(n => padronizarTexto(n)) 
         : [];
-      if (!nacsPadronizadas.includes(filtroNacionalidade)) return false;
+      if (!nacionalidadesSelecionadas.some(nacionalidade => nacsPadronizadas.includes(nacionalidade))) return false;
     }
 
     return true;
@@ -262,41 +289,50 @@ preencherSelects();
 renderizarMarcadores(true);
 
 selectCidade.addEventListener('change', () => renderizarMarcadores(true));
-selectNacionalidade.addEventListener('change', () => renderizarMarcadores(true));
 
-if (triggerCategoria) {
-  triggerCategoria.addEventListener('click', function(e) {
+[
+  { trigger: triggerCategoria, options: optionsCategoria },
+  { trigger: triggerNacionalidade, options: optionsNacionalidade }
+].forEach(({ trigger, options }) => {
+  trigger.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
-    optionsCategoria.classList.toggle('show');
-    triggerCategoria.setAttribute('aria-expanded', optionsCategoria.classList.contains('show'));
+    options.classList.toggle('show');
+    trigger.setAttribute('aria-expanded', options.classList.contains('show'));
   });
-}
-
-document.addEventListener('click', function(e) {
-  const multiSelect = document.getElementById('multi-select-categoria');
-  if (multiSelect && !multiSelect.contains(e.target)) {
-    if (optionsCategoria) optionsCategoria.classList.remove('show');
-    if (triggerCategoria) triggerCategoria.setAttribute('aria-expanded', 'false');
-  }
+  trigger.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      options.classList.remove('show');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+  });
 });
 
-triggerCategoria.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-    optionsCategoria.classList.remove('show');
-    triggerCategoria.setAttribute('aria-expanded', 'false');
-  }
+document.addEventListener('click', function(e) {
+  [
+    { container: document.getElementById('multi-select-categoria'), trigger: triggerCategoria, options: optionsCategoria },
+    { container: document.getElementById('multi-select-nacionalidade'), trigger: triggerNacionalidade, options: optionsNacionalidade }
+  ].forEach(({ container, trigger, options }) => {
+    if (!container.contains(e.target)) {
+      options.classList.remove('show');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+  });
 });
 
 document.getElementById('btn-limpar').addEventListener('click', () => {
   selectCidade.value = '';
-  selectNacionalidade.value = '';
-  
+
   categoriasSelecionadas = [];
   document.querySelectorAll('#options-categoria input[type="checkbox"]').forEach(cb => {
     cb.checked = false;
   });
+  nacionalidadesSelecionadas = [];
+  document.querySelectorAll('#options-nacionalidade input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
   atualizarLabelCategoria();
+  atualizarLabelNacionalidade();
   
   renderizarMarcadores();
 });
