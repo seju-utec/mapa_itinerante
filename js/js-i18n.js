@@ -1,4 +1,3 @@
-// ===== SISTEMA DE TRADUÇÃO =====
 
 const translations = {
   'pt': {
@@ -136,7 +135,6 @@ const translations = {
   }
 };
 
-// Função para aplicar traduções
 function applyTranslations(langCode) {
   const translation = translations[langCode];
   if (!translation) return;
@@ -175,7 +173,6 @@ function applyTranslations(langCode) {
   });
 }
 
-// Função para mudar idioma
 function changeLanguage(langCode, flag, langName) {
   document.getElementById('current-flag').textContent = flag;
   document.getElementById('current-lang').textContent = langName;
@@ -184,7 +181,6 @@ function changeLanguage(langCode, flag, langName) {
   localStorage.setItem('preferred-language', langCode);
 }
 
-// Função para toggle do dropdown
 function toggleLanguageDropdown() {
   const dropdown = document.getElementById('language-dropdown');
   dropdown.classList.toggle('show');
