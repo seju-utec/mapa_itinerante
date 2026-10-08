@@ -139,6 +139,37 @@
 .popup-secao {
   margin-bottom: 12px;
 }
+.popup-endereco {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 12px;
+  align-items: start;
+}
+.popup-endereco-texto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.popup-rota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+}
+.popup-rota img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+.popup-rota:hover {
+  background: #e6f0ea;
+}
+.popup-rota:focus-visible {
+  outline: 2px solid #155b39;
+  outline-offset: 2px;
+}
 .popup-conteudo {
   display: flex;
   gap: 15px;
