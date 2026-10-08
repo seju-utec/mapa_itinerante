@@ -98,8 +98,8 @@ const localizacoes = [
   },
   {
     "city": "Almirante Tamandaré",
-    "lat": -25.3247,
-    "lng": -49.31,
+    "lat": -25.31636426255847,
+    "lng": -49.30417872665337,
     "org": "Instituto Boneca Feliz",
     "fundacao": "2026-02-14",
     "email": "instituto.boneca.feliz@gmail.com",
@@ -176,8 +176,8 @@ const localizacoes = [
   },
   {
     "city": "Curitiba",
-    "lat": -25.4284,
-    "lng": -49.2733,
+    "lat": -25.372719744238626,
+    "lng": -49.44149701534059,
     "org": "Associação de Capoeira Navalha de Prata Megê",
     "fundacao": "2025-11-26",
     "email": "gruponavalhadeprata@gmail.com",
