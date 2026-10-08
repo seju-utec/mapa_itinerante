@@ -11,13 +11,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let clusterGroup = L.markerClusterGroup();
 map.addLayer(clusterGroup);
 
-const iconeLocal = L.icon({
-  iconUrl: 'img/icone-mapa.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 39],
-  popupAnchor: [0, -35]
-});
-
 const selectCidade = document.getElementById('filtro-cidade');
 
 const triggerCategoria = document.getElementById('trigger-categoria');
@@ -282,7 +275,7 @@ function renderizarMarcadores(ajustarVista = false) {
   lista.forEach(loc => {
     if (typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return;
 
-    const marker = L.marker([loc.lat, loc.lng], { icon: iconeLocal });
+    const marker = L.marker([loc.lat, loc.lng]);
     marker.bindPopup(montarPopup(loc), {
       maxWidth: 600,
       minWidth: 200,
