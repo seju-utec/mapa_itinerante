@@ -11,6 +11,13 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let clusterGroup = L.markerClusterGroup();
 map.addLayer(clusterGroup);
 
+const iconeLocal = L.icon({
+  iconUrl: 'img/icone-mapa.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 39],
+  popupAnchor: [0, -35]
+});
+
 const selectCidade = document.getElementById('filtro-cidade');
 
 const triggerCategoria = document.getElementById('trigger-categoria');
@@ -151,6 +158,12 @@ function adicionarCampo(html, titulo, valor) {
 }
 
 function montarPopup(loc) {
+  const coordenadasValidas = Number.isFinite(loc.lat) && Number.isFinite(loc.lng)
+    && Math.abs(loc.lat) <= 90 && Math.abs(loc.lng) <= 180;
+  const destino = coordenadasValidas
+    ? `${loc.lat},${loc.lng}`
+    : [texto(loc.endereco), texto(loc.city), 'Brasil'].filter(Boolean).join(', ');
+  const linkRota = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&dir_action=navigate`;
   const criarTags = (lista) => {
     if (!Array.isArray(lista) || lista.length === 0) return '-';
     return lista.map(item => `<span class="tag">${escapar(item)}</span>`).join(' ');
@@ -197,7 +210,12 @@ function montarPopup(loc) {
   let html = `
     <div class="popup-organizacao">
       <div class="popup-titulo">${escapar(loc.org)}</div>
-      <div class="popup-endereco"><b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}</div>
+      <div class="popup-endereco">
+        <div class="popup-endereco-texto"><b>${escapar(loc.city)}</b> ${loc.endereco ? '— ' + escapar(loc.endereco) : ''}</div>
+        <a class="popup-rota" href="${escapar(linkRota)}" target="_blank" rel="noopener noreferrer" title="Abrir rota no Google Maps" aria-label="Abrir rota no Google Maps até ${escapar(loc.org)}">
+          <img src="img/icone-mapa.png" width="32" height="32" alt="">
+        </a>
+      </div>
       <div class="popup-conteudo">
         <div class="popup-coluna-esquerda">${colunaEsquerda}</div>
         <div class="popup-coluna-direita">${colunaDireita}</div>
@@ -264,7 +282,7 @@ function renderizarMarcadores(ajustarVista = false) {
   lista.forEach(loc => {
     if (typeof loc.lat !== 'number' || typeof loc.lng !== 'number') return;
 
-    const marker = L.marker([loc.lat, loc.lng]);
+    const marker = L.marker([loc.lat, loc.lng], { icon: iconeLocal });
     marker.bindPopup(montarPopup(loc), {
       maxWidth: 600,
       minWidth: 200,
